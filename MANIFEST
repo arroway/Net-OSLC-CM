@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Net-OSLC-CM.t
+lib/Net/OSLC/CM.pm
+lib/Net/OSLC/CM/Connection.pm
