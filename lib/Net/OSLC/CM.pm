@@ -35,27 +35,31 @@ OSLC CM service providers must provide a Service Provider Resource, and *MAY* pr
 Get an OSLC Service Provider Catalog Document from a Service Provider Catalog Resource (via GET method)
 An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
 
-This document is RDF/XML.
 =cut
 
 sub parse_provider_resource {
   my $self = shift;
-  #$self->get_provider_catalog_resource;
-
+  
+  $self->get_provider_catalog_resource;
+  
   #testing parsing a SPC Document which URI we know
-  $self->get_provider_catalog_document( $self->url . "/provider?productId=1");
+  #$self->get_provider_catalog_document( $self->url . "/provider?productId=1");
 }
 
-
-#XXX:if not xml?
 sub get_provider_catalog_resource {
   my $self =shift;
   my $catalog_url = $self->url . "/catalog";
   
-  my $http_response = ($self->connection->request(GET $catalog_url));
-  $self->catalog($self->get_http_message($http_response));
-  $self->parse_ressources($catalog_url, $self->catalog);
-  
+  # The service provider should provide a catalog in RDF or HTML.
+  # We ask for the XML version. 
+  my $http_response = (
+    $self->connection->get(
+      $catalog_url, 
+      'Accept' => 'application/rdf+xml')
+  );
+
+  my $body = $self->get_http_body($http_response);
+  $self->parse_xml_ressources($catalog_url, $body);  
 }
 
 sub get_provider_catalog_document {
@@ -66,6 +70,7 @@ sub get_provider_catalog_document {
   my $body = $self->get_http_body($http_response);
   $self->parse_ressources($document_url, $body);
 }
+
 
 sub get_http_body {
   my $self = shift;
@@ -79,16 +84,17 @@ sub get_http_body {
  
 }
 
-sub parse_ressources {
+sub parse_xml_ressources {
   my $self = shift;
   my ($base_uri, $rdf_data) = @_;
 
   # we only want rdf data from the body of the HTTP response
   $rdf_data =~ m/(<rdf.*RDF>)/;
-  print $rdf_data;
+  #print $rdf_data;
 
   my $parser = RDF::Trine::Parser->new('rdfxml');
   my $model = RDF::Trine::Model->temporary_model;
+  
   $parser->parse_into_model( $base_uri, $rdf_data, $model );
 }
 
