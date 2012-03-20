@@ -2,7 +2,7 @@ package Net::OSLC::CM::Connection;
 use Any::Moose;
 
 use URI;
-use LWP::Agent;
+use LWP::UserAgent;
 
 has uri => (
   isa => 'Str',

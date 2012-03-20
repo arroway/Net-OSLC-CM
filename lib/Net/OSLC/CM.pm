@@ -26,10 +26,14 @@ our @EXPORT = qw(
 	
 );
 
-
-
 # Preloaded methods go here.
 
+sub connect{
+  
+  my $self = shift;
+  my $url = shift;
+  Net::OSLC::CM::Connection->new( url => $url);
+}
 
 
 1;
