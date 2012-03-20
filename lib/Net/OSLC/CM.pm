@@ -2,40 +2,96 @@ package Net::OSLC::CM;
 use Any::Moose;
 
 use Net::OSLC::CM::Connection;
+use RDF::Trine;
+use HTTP::Request::Common;
+use HTTP::Request;
+use HTTP::Response::Parser;
+
 
 our $VERSION = '0.01';
 
-require Exporter;
-
-our @ISA = qw(Exporter);
-
-# Items to export into callers namespace by default. Note: do not export
-# names by default without a very good reason. Use EXPORT_OK instead.
-# Do not simply export all your public functions/methods/constants.
-
-# This allows declaration	use Net::OSLC ':all';
-# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
-# will save memory.
-our %EXPORT_TAGS = ( 'all' => [ qw(
-	
-) ] );
-
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-
-our @EXPORT = qw(
-	
+has url => (
+  isa => 'Str',
+  is => 'ro'
 );
 
-# Preloaded methods go here.
+has connection => (
+  isa => 'LWP::UserAgent',
+  is => 'rw',
+  lazy => 1,
+  default => sub {
+    my $self = shift;
+    my $m = Net::OSLC::CM::Connection->new(url => $self->url);
+    return $m->connection;
+  }
+);
 
-sub connect{
-  
+has catalog => (
+  isa => 'Str',
+  is => 'rw'
+);
+
+=head1
+OSLC CM service providers must provide a Service Provider Resource, and *MAY* provide a Service Provider Catalog Resource.
+Get an OSLC Service Provider Catalog Document from a Service Provider Catalog Resource (via GET method)
+An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
+
+This document is RDF/XML.
+=cut
+
+sub parse_provider_resource {
   my $self = shift;
-  my $url = shift;
-  Net::OSLC::CM::Connection->new( url => $url);
+  #$self->get_provider_catalog_resource;
+
+  #testing parsing a SPC Document which URI we know
+  $self->get_provider_catalog_document( $self->url . "/provider?productId=1");
 }
 
 
+#XXX:if not xml?
+sub get_provider_catalog_resource {
+  my $self =shift;
+  my $catalog_url = $self->url . "/catalog";
+  
+  my $http_response = ($self->connection->request(GET $catalog_url));
+  $self->catalog($self->get_http_message($http_response));
+  $self->parse_ressources($catalog_url, $self->catalog);
+  
+}
+
+sub get_provider_catalog_document {
+  my $self = shift;
+  my $document_url = shift;
+
+  my $http_response = ($self->connection->request(GET $document_url));
+  my $document = $self->get_http_message($http_response);
+  $self->parse_ressources($document);
+}
+
+sub get_http_message {
+  my $self = shift;
+  my $http_response = shift;
+
+  print $http_response->as_string();
+  my $res = HTTP::Response::Parser->parse_http_response($http_response->as_string());
+
+  if($res == -1){
+    print 'Parsing HTTP message - Response is incomplete';
+  } elsif ($res == -2){
+    print 'Parsing HTTP message - response is broken';
+  } else { 
+    return $res->{_msg};
+  }  
+}
+
+sub parse_ressources {
+  my $self = shift;
+  my ($base_uri, $document) = shift;
+ 
+  my $parser = RDF::Trine::Parser->new('rdfxml');
+  my $model = RDF::Trine::Model->temporary_model;
+  $parser->parse_into_model( $base_uri, $document, $model );
+}
 1;
 __END__
 
@@ -45,33 +101,13 @@ Net::OSLC::CM - Interact with an OSLC Service Provider Catalog, respecting speci
 
 =head1 SYNOPSIS
 
-  use Net::OSLC::CM;
-  blah blah blah
 
 =head1 DESCRIPTION
 
-Stub documentation for Net::OSLC, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
-
-Blah blah blah.
 
 =head2 EXPORT
 
-None by default.
-
-
-
 =head1 SEE ALSO
-
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
 
 =head1 AUTHOR
 
