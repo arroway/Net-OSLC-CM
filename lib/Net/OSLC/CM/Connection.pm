@@ -1,10 +1,14 @@
 package Net::OSLC::CM::Connection;
 use Any::Moose;
 
-use URI;
 use LWP::UserAgent;
 
-has uri => (
+=head1 
+Connection to a server with the given url.
+Will probably deal with authentication later on.
+=cut
+
+has url => (
   isa => 'Str',
   is  => 'ro'
 );

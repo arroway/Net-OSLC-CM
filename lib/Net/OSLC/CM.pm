@@ -2,37 +2,52 @@ package Net::OSLC::CM;
 use Any::Moose;
 
 use Net::OSLC::CM::Connection;
+use RDF::Trine::Parser::RDFXML;
+use HTTP::Request::Common;
+use HTTP::Request;
 
 our $VERSION = '0.01';
 
-require Exporter;
-
-our @ISA = qw(Exporter);
-
-# Items to export into callers namespace by default. Note: do not export
-# names by default without a very good reason. Use EXPORT_OK instead.
-# Do not simply export all your public functions/methods/constants.
-
-# This allows declaration	use Net::OSLC ':all';
-# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
-# will save memory.
-our %EXPORT_TAGS = ( 'all' => [ qw(
-	
-) ] );
-
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-
-our @EXPORT = qw(
-	
+has url => (
+  isa => 'Str',
+  is => 'ro'
 );
 
-# Preloaded methods go here.
+has connection => (
+  isa => 'LWP::UserAgent',
+  is => 'rw',
+  lazy => 1,
+  default => sub {
+    my $self = shift;
+    my $m = Net::OSLC::CM::Connection->new(url => $self->url);
+    return $m->connection;
+  }
+);
 
-sub connect{
-  
+has catalog => (
+  isa => 'HTTP::Response',
+  is => 'rw'
+);
+
+=head1
+OSLC CM service providers must provide a Service Provider Resource, amd may provide a Service Provider Catalog Resource.
+Get an OSLC Service Provider Catalog Document from a Service Provider Catalog Resource (via GET method)
+An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
+
+This document is RDF/XML.
+=cut
+
+sub parse_provider_resource{
   my $self = shift;
-  my $url = shift;
-  Net::OSLC::CM::Connection->new( url => $url);
+  $self->get_provider_catalog;
+}
+
+sub get_provider_catalog{
+  my $self =shift;
+  my $catalog_url = $self->url . "/catalog";
+  $self->catalog(
+    $self->connection->request(GET $catalog_url)
+  );
 }
 
 
