@@ -5,8 +5,7 @@ use Net::OSLC::CM::Connection;
 use RDF::Trine;
 use HTTP::Request::Common;
 use HTTP::Request;
-use HTTP::Response::Parser;
-
+use HTTP::MessageParser;
 
 our $VERSION = '0.01';
 
@@ -64,35 +63,38 @@ sub get_provider_catalog_document {
   my $document_url = shift;
 
   my $http_response = ($self->connection->request(GET $document_url));
-  my $document = $self->get_http_message($http_response);
-  $self->parse_ressources($document);
+  my $body = $self->get_http_body($http_response);
+  $self->parse_ressources($document_url, $body);
 }
 
-sub get_http_message {
+sub get_http_body {
   my $self = shift;
   my $http_response = shift;
 
-  print $http_response->as_string();
-  my $res = HTTP::Response::Parser->parse_http_response($http_response->as_string());
+  # parse_response() returns body as a string reference
+  my ( $HTTP_version, $status_Code, $reason_phrase, $headers, $body )
+          = HTTP::MessageParser->parse_response($http_response->as_string());
 
-  if($res == -1){
-    print 'Parsing HTTP message - Response is incomplete';
-  } elsif ($res == -2){
-    print 'Parsing HTTP message - response is broken';
-  } else { 
-    return $res->{_msg};
-  }  
+  return $$body;
+ 
 }
 
 sub parse_ressources {
   my $self = shift;
-  my ($base_uri, $document) = shift;
- 
+  my ($base_uri, $rdf_data) = @_;
+
+  # we only want rdf data from the body of the HTTP response
+  $rdf_data =~ m/(<rdf.*RDF>)/;
+  print $rdf_data;
+
   my $parser = RDF::Trine::Parser->new('rdfxml');
   my $model = RDF::Trine::Model->temporary_model;
-  $parser->parse_into_model( $base_uri, $document, $model );
+  $parser->parse_into_model( $base_uri, $rdf_data, $model );
 }
+
+
 1;
+
 __END__
 
 =head1 NAME
