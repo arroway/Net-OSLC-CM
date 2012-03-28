@@ -3,8 +3,9 @@ use Any::Moose;
 
 use Net::OSLC::CM::Connection;
 use RDF::Trine;
-use HTTP::Request::Common;
+use RDF::Query;
 use HTTP::Request;
+use HTTP::Request::Common;
 use HTTP::MessageParser;
 
 our $VERSION = '0.01';
@@ -92,10 +93,58 @@ sub parse_xml_ressources {
   $rdf_data =~ m/(<rdf.*RDF>)/;
   #print $rdf_data;
 
+  my $store = RDF::Trine::Store::Memory->new();
   my $parser = RDF::Trine::Parser->new('rdfxml');
-  my $model = RDF::Trine::Model->temporary_model;
-  
+  my $model = RDF::Trine::Model->new($store);
+
   $parser->parse_into_model( $base_uri, $rdf_data, $model );
+  $self->query_rdf($model);
+}
+
+sub query_rdf {
+  my $self = shift;
+  my $model = shift;
+
+  my $oslc = RDF::Trine::Namespace->new('http://open-services.net/ns/core#');
+  my $base = undef;
+  if ($self->url =~ m/(.*)\//){
+    $base = RDF::Trine::Namespace->new($self->url);
+  } else {
+    $base = RDF::Trine::Namespace->new($self->url . "/");
+  }
+
+  my $query = RDF::Query->new('
+    PREFIX oslc: <http://open-services.net/ns/core#>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    SELECT DISTINCT ?url 
+    WHERE  { ?url dcterms:title ?u}');
+  
+   my $iterator = $query->execute( $model );
+   while (my $row = $iterator->next) {
+     #      print $row->{ 'url' }->as_string;
+     print $row;
+   }
+}
+
+
+sub new_var {
+    my ($var) = @_;
+    return scalar RDF::Query::Node::Variable->new($var);
+}
+
+sub new_triple {
+    my ($s, $p, $o) = @_;
+    return scalar RDF::Query::Algebra::Triple->new($s, $p, $o)
+}
+
+
+sub new_basic_project {
+    my ($patterns_ref, $result_prop) = @_;
+    my $bgp = new RDF::Query::Algebra::BasicGraphPattern(@$patterns_ref);
+    my $ggp = new RDF::Query::Algebra::GroupGraphPattern($bgp);
+
+    return scalar RDF::Query::Algebra::Project->new($ggp, [new_var($result_prop)]);
 }
 
 
