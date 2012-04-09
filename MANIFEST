@@ -2,6 +2,8 @@ Changes
 Makefile.PL
 MANIFEST
 README
-t/Net-OSLC-CM.t
+t/01-get-catalog.t
 lib/Net/OSLC/CM.pm
+lib/Net/OSLC/CM/Catalog.pm
 lib/Net/OSLC/CM/Connection.pm
+lib/Net/OSLC/CM/Parser.pm

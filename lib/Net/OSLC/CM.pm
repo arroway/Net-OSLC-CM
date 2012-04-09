@@ -1,7 +1,9 @@
 package Net::OSLC::CM;
 use Any::Moose;
 
+use Net::OSLC::CM::Catalog;
 use Net::OSLC::CM::Connection;
+use Net::OSLC::CM::Parser;
 use RDF::Trine;
 use RDF::Query;
 use HTTP::MessageParser;
@@ -14,20 +16,24 @@ has url => (
 );
 
 has connection => (
-  isa => 'LWP::UserAgent',
+  isa => 'Net::OSLC::CM::Connection',
   is => 'rw',
   lazy => 1,
   default => sub {
     my $self = shift;
     my $m = Net::OSLC::CM::Connection->new(url => $self->url);
-    return $m->connection;
+    return $m;
   }
 );
 
 has catalog => (
-  isa => 'ArrayRef',
+  isa => 'Net::OSLC::CM::Catalog',
+  is => 'rw'
+);
+
+has parser => (
+  isa => 'Net::OSLC::CM::Parser',
   is => 'rw',
-  default => sub { [] },
 );
 
 =head1
@@ -37,90 +43,49 @@ An OSLC Service Provider Catalog Document describes a catalog whose entries desc
 
 =cut
 
-sub parse_provider_resource {
+sub get_provider_resources {
   my $self = shift;
   
-  $self->get_provider_catalog_resource;
+  $self->create_catalog;
+  $self->parser( 
+    Net::OSLC::CM::Parser->new(cm => $self) 
+  );
   
-  #testing parsing a SPC Document which URI we know
-  #$self->get_provider_catalog_document( $self->url . "/provider?productId=1");
+  $self->get_provider_catalog_resource;
 }
 
 sub get_provider_catalog_resource {
   my $self =shift;
-  my $catalog_url = $self->url . "/catalog";
   
-  # The service provider should provide a catalog in RDF or HTML.
-  # We ask for the XML version. 
-  my $http_response = (
-    $self->connection->get(
-      $catalog_url, 
-      'Accept' => 'application/rdf+xml')
+  my $body_catalog = $self->catalog->get_catalog($self->connection);
+  $self->catalog->parse_catalog($self->parser, $body_catalog);
+}
+
+sub create_catalog {
+  my $self = shift;
+  my $catalog_url = "";
+
+  if ($self->url =~ m/\/$/){
+    $catalog_url = $self->url . "catalog";
+  }
+  else {
+    $catalog_url =  $self->url . "/catalog";
+  }
+   
+  $self->catalog(
+    Net::OSLC::CM::Catalog->new(url => $catalog_url)
   );
-
-  my $body = $self->get_http_body($http_response);
-  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
-  $self->parse_xml_ressources($catalog_url, $body, $rdf_query);  
-}
-
-sub get_provider_catalog_document {
-  my $self = shift;
-  my $document_url = shift;
-
-  my $http_response = ($self->connection->request(GET $document_url));
-  my $body = $self->get_http_body($http_response);
-  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
-  $self->parse_xml_ressources($document_url, $body, $rdf_query);
-}
-
-
-sub get_http_body {
-  my $self = shift;
-  my $http_response = shift;
-
-  # parse_response() returns body as a string reference
-  my ( $HTTP_version, $status_Code, $reason_phrase, $headers, $body )
-          = HTTP::MessageParser->parse_response($http_response->as_string());
-
-  return $$body;
- 
-}
-
-sub parse_xml_ressources {
-  my $self = shift;
-  my ($base_uri, $rdf_data, $rdf_query) = @_;
-
-  # we only want rdf data from the body of the HTTP response
-  $rdf_data =~ m/(<rdf.*RDF>)/;
-  #print $rdf_data;
-
-  my $store = RDF::Trine::Store::Memory->new();
-  my $parser = RDF::Trine::Parser->new('rdfxml');
-  my $model = RDF::Trine::Model->new($store);
-
-  $parser->parse_into_model( $base_uri, $rdf_data, $model );
-  $self->query_rdf($model, $rdf_query);
 } 
 
-sub query_rdf {
-  my $self = shift;
-  my ($model, $rdf_query) = @_;
-
-  my $query = RDF::Query->new('
-    PREFIX oslc:    <http://open-services.net/ns/core#>
-    PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>'
-    . $rdf_query);
-  
-   my $iterator = $query->execute( $model );
-   while (my $row = $iterator->next) {
-     if ($row =~ m/{ url=<(.*)> }/){
-       push(@{$self->catalog}, $1);
-     }
-   }
-   print @{$self->catalog};
-   
-}
+#sub get_provider_catalog_document {
+#  my $self = shift;
+#  my $document_url = shift;
+#
+#  my $http_response = ($self->connection->request(GET $document_url));
+#  my $body = $self->get_http_body($http_response);
+#  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
+#  $self->parse_xml_ressources($document_url, $body, $rdf_query);
+#}
 
 1;
 

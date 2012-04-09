@@ -1,21 +1,45 @@
-package Net::OSLC::CM::Catalog.pm
+package Net::OSLC::CM::Catalog;
 
 use Any::Moose;
-use RDF::Trine::Parser::RDFXML;
-use HTTP::Request::Common;
 
-==head1
-OSLC CM service providers must provide a Service Provider Resource, amd may provide a Service Provider Catalog Resource.
-Get an OSLC Service Provider Catalog Document from a Service Provider Catalog Resource (via GET method)
-An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
+has url => (
+  isa => 'Str',
+  is => 'rw',
+);
 
-This document is RDF/XML.
-==cut
+has data => (
+  isa => 'ArrayRef',
+  is => 'rw',
+  default => sub { [] },
+);
+ 
 
-
-
-sub parse{
+sub get_catalog {
   my $self = shift;
-   
+  my $connection = shift;
 
+  # The service provider should provide a catalog in RDF or HTML.
+  # We ask for the XML version. 
+  my $http_response = (
+    $connection->connection->get(
+      $self->url,
+      'Accept' => 'application/rdf+xml')
+  );
+
+  my $body = $connection->get_http_body($http_response);
+  return $body;  
 }
+
+sub parse_catalog {
+  my $self = shift;
+  my $parser = shift;
+  my $body = shift;
+
+  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
+  
+  $parser->parse_xml_ressources($self->url, $body, $rdf_query);
+}
+
+
+
+1;
