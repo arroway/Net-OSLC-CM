@@ -4,8 +4,6 @@ use Any::Moose;
 use Net::OSLC::CM::Connection;
 use RDF::Trine;
 use RDF::Query;
-use HTTP::Request;
-use HTTP::Request::Common;
 use HTTP::MessageParser;
 
 our $VERSION = '0.01';
@@ -27,8 +25,9 @@ has connection => (
 );
 
 has catalog => (
-  isa => 'Str',
-  is => 'rw'
+  isa => 'ArrayRef',
+  is => 'rw',
+  default => sub { [] },
 );
 
 =head1
@@ -60,7 +59,8 @@ sub get_provider_catalog_resource {
   );
 
   my $body = $self->get_http_body($http_response);
-  $self->parse_xml_ressources($catalog_url, $body);  
+  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
+  $self->parse_xml_ressources($catalog_url, $body, $rdf_query);  
 }
 
 sub get_provider_catalog_document {
@@ -69,7 +69,8 @@ sub get_provider_catalog_document {
 
   my $http_response = ($self->connection->request(GET $document_url));
   my $body = $self->get_http_body($http_response);
-  $self->parse_ressources($document_url, $body);
+  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
+  $self->parse_xml_ressources($document_url, $body, $rdf_query);
 }
 
 
@@ -87,7 +88,7 @@ sub get_http_body {
 
 sub parse_xml_ressources {
   my $self = shift;
-  my ($base_uri, $rdf_data) = @_;
+  my ($base_uri, $rdf_data, $rdf_query) = @_;
 
   # we only want rdf data from the body of the HTTP response
   $rdf_data =~ m/(<rdf.*RDF>)/;
@@ -98,55 +99,28 @@ sub parse_xml_ressources {
   my $model = RDF::Trine::Model->new($store);
 
   $parser->parse_into_model( $base_uri, $rdf_data, $model );
-  $self->query_rdf($model);
-}
+  $self->query_rdf($model, $rdf_query);
+} 
 
 sub query_rdf {
   my $self = shift;
-  my $model = shift;
-
-  my $oslc = RDF::Trine::Namespace->new('http://open-services.net/ns/core#');
-  my $base = undef;
-  if ($self->url =~ m/(.*)\//){
-    $base = RDF::Trine::Namespace->new($self->url);
-  } else {
-    $base = RDF::Trine::Namespace->new($self->url . "/");
-  }
+  my ($model, $rdf_query) = @_;
 
   my $query = RDF::Query->new('
-    PREFIX oslc: <http://open-services.net/ns/core#>
+    PREFIX oslc:    <http://open-services.net/ns/core#>
     PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT DISTINCT ?url 
-    WHERE  { ?url dcterms:title ?u}');
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>'
+    . $rdf_query);
   
    my $iterator = $query->execute( $model );
    while (my $row = $iterator->next) {
-     #      print $row->{ 'url' }->as_string;
-     print $row;
+     if ($row =~ m/{ url=<(.*)> }/){
+       push(@{$self->catalog}, $1);
+     }
    }
+   print @{$self->catalog};
+   
 }
-
-
-sub new_var {
-    my ($var) = @_;
-    return scalar RDF::Query::Node::Variable->new($var);
-}
-
-sub new_triple {
-    my ($s, $p, $o) = @_;
-    return scalar RDF::Query::Algebra::Triple->new($s, $p, $o)
-}
-
-
-sub new_basic_project {
-    my ($patterns_ref, $result_prop) = @_;
-    my $bgp = new RDF::Query::Algebra::BasicGraphPattern(@$patterns_ref);
-    my $ggp = new RDF::Query::Algebra::GroupGraphPattern($bgp);
-
-    return scalar RDF::Query::Algebra::Project->new($ggp, [new_var($result_prop)]);
-}
-
 
 1;
 
