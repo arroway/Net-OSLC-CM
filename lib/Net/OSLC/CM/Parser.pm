@@ -41,7 +41,7 @@ sub query_rdf {
        push(@{$self->cm->catalog->data}, $1);
      }
    }
-   print @{$self->cm->catalog->data};
+   #print @{$self->cm->catalog->data};
    
 }
 
