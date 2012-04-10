@@ -4,6 +4,7 @@ use Any::Moose;
 use Net::OSLC::CM::Catalog;
 use Net::OSLC::CM::Connection;
 use Net::OSLC::CM::Parser;
+use Net::OSLC::CM::ServiceProvider;
 use RDF::Trine;
 use RDF::Query;
 use HTTP::MessageParser;
@@ -52,6 +53,7 @@ sub get_provider_resources {
   );
   
   $self->get_provider_catalog_resource;
+  $self->get_service_providers;
 }
 
 sub get_provider_catalog_resource {
@@ -75,17 +77,25 @@ sub create_catalog {
   $self->catalog(
     Net::OSLC::CM::Catalog->new(url => $catalog_url)
   );
-} 
+}
 
-#sub get_provider_catalog_document {
-#  my $self = shift;
-#  my $document_url = shift;
-#
-#  my $http_response = ($self->connection->request(GET $document_url));
-#  my $body = $self->get_http_body($http_response);
-#  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
-#  $self->parse_xml_ressources($document_url, $body, $rdf_query);
-#}
+sub get_service_providers {
+  my $self =shift;
+
+  my $ressource = Net::OSLC::CM::ServiceProvider->new;
+  my $body_ressource = $ressource->get_service_provider($self->connection, $self->catalog);
+  $ressource->parse_service_provider($self->parser, $body_ressource);
+
+
+  #we wanna create in sd every ticket that is not present (easiest part) or that is changed 
+  #from the distant bugtracker
+  #
+  #for each entry in $self>catalog-data, 
+  #create a new ServiceProvider if necessary
+  #deal with it (check if we have the ticket in sd)
+  #delete it if we don't want anything
+}
+
 
 1;
 

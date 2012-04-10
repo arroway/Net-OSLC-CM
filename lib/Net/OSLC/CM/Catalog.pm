@@ -40,6 +40,4 @@ sub parse_catalog {
   $parser->parse_xml_ressources($self->url, $body, $rdf_query);
 }
 
-
-
 1;
