@@ -38,7 +38,10 @@ sub query_rdf {
    my $iterator = $query->execute( $model );
    while (my $row = $iterator->next) {
      if ($row =~ m/{ url=<(.*)> }/){
-       push(@{$self->cm->catalog->data}, $1);
+        #TODO: deal with the general case
+       my $data = $1;
+       $data =~ s/localhost/192.168.56.101/;
+       push(@{$self->cm->catalog->data}, $data);
      }
    }
    #print @{$self->cm->catalog->data};
