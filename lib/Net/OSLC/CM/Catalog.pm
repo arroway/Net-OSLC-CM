@@ -2,6 +2,11 @@ package Net::OSLC::CM::Catalog;
 
 use Any::Moose;
 
+has cm => (
+  isa => 'Net::OSLC::CM',
+  is => 'rw',
+);
+
 has url => (
   isa => 'Str',
   is => 'rw',
@@ -37,7 +42,8 @@ sub parse_catalog {
 
   my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
   
-  $parser->parse_xml_ressources($self->url, $body, $rdf_query);
+  $parser->parse_xml_ressources($self->url, $body, $rdf_query, $self->cm->catalog->data);
+  print @{$self->cm->catalog->data} . "\n";
 }
 
 1;

@@ -11,7 +11,7 @@ has cm => (
 
 sub parse_xml_ressources {
   my $self = shift;
-  my ($base_uri, $rdf_data, $rdf_query) = @_;
+  my ($base_uri, $rdf_data, $rdf_query, $result_storage) = @_;
 
   # we only want rdf data from the body of the HTTP response
   $rdf_data =~ m/(<rdf.*RDF>)/;
@@ -22,12 +22,12 @@ sub parse_xml_ressources {
   my $model = RDF::Trine::Model->new($store);
 
   $parser->parse_into_model( $base_uri, $rdf_data, $model );
-  $self->query_rdf($model, $rdf_query);
+  $self->query_rdf($model, $rdf_query, $result_storage);
 } 
 
 sub query_rdf {
   my $self = shift;
-  my ($model, $rdf_query) = @_;
+  my ($model, $rdf_query, $result_storage) = @_;
 
   my $query = RDF::Query->new('
     PREFIX oslc:    <http://open-services.net/ns/core#>
@@ -41,11 +41,11 @@ sub query_rdf {
         #TODO: deal with the general case
        my $data = $1;
        $data =~ s/localhost/192.168.56.101/;
-       push(@{$self->cm->catalog->data}, $data);
+       print $data . "\n";
+       push(@{$result_storage}, $data);
+       #push(@{$self->cm->catalog->data}, $data);
      }
    }
-   #print @{$self->cm->catalog->data};
-   
 }
 
 1;

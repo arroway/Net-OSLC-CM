@@ -2,25 +2,33 @@ package Net::OSLC::CM::ServiceProvider;
 
 use Any::Moose;
 
-has uri => (
+has cm => (
+  isa => 'Net::OSLC::CM',
+  is => 'rw',
+);
+
+has url => (
   isa => 'Str',
   is => 'rw',
 );  
 
+has data => (
+  isa => 'ArrayRef',
+  is => 'rw',
+);
+
 sub get_service_provider {
   my $self = shift;
   my $connection = shift;
-  my $catalog = shift;
 
-  $self->uri(${$catalog->data}[2]);
+  $self->url(${$self->cm->catalog->data}[1]);
   
   my $http_response = (
-      $connection->connection->get(
-       $self->uri,
-      'Accept' => 'application/rdf+xml') 
+    $connection->connection->get(
+    $self->url,
+    'Accept' => 'application/rdf+xml') 
   );
 
-  print $http_response;
   my $body = $connection->get_http_body($http_response);
   return $body;
 }
@@ -32,7 +40,7 @@ sub parse_service_provider {
   my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
   print $body;
 
-  $parser->parse_xml_ressources($self->uri, $body, $rdf_query);
+  $parser->parse_xml_ressources($self->url, $body, $rdf_query, $self->data);
 }
 
 1;

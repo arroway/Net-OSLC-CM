@@ -75,14 +75,16 @@ sub create_catalog {
   }
    
   $self->catalog(
-    Net::OSLC::CM::Catalog->new(url => $catalog_url)
+    Net::OSLC::CM::Catalog->new(
+      url => $catalog_url,
+      cm => $self)
   );
 }
 
 sub get_service_providers {
   my $self =shift;
 
-  my $ressource = Net::OSLC::CM::ServiceProvider->new;
+  my $ressource = Net::OSLC::CM::ServiceProvider->new(cm => $self);
   my $body_ressource = $ressource->get_service_provider($self->connection, $self->catalog);
   $ressource->parse_service_provider($self->parser, $body_ressource);
 
