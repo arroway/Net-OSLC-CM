@@ -84,10 +84,10 @@ sub create_catalog {
 sub get_service_providers {
   my $self =shift;
 
-  my $ressource = Net::OSLC::CM::ServiceProvider->new(cm => $self);
-  my $body_ressource = $ressource->get_service_provider($self->connection, $self->catalog);
-  $ressource->parse_service_provider($self->parser, $body_ressource);
-
+  my $provider = Net::OSLC::CM::ServiceProvider->new(cm => $self);
+  my $body_provider = $provider->get_service_provider($self->connection, $self->catalog);
+  my $model =  $provider->parse_service_provider($self->parser, $body_provider);
+  $provider->query_base($self->parser, $model);
 
   #we wanna create in sd every ticket that is not present (easiest part) or that is changed 
   #from the distant bugtracker

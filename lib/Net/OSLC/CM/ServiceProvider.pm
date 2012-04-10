@@ -12,7 +12,7 @@ has url => (
   is => 'rw',
 );  
 
-has data => (
+has services => (
   isa => 'ArrayRef',
   is => 'rw',
 );
@@ -21,7 +21,7 @@ sub get_service_provider {
   my $self = shift;
   my $connection = shift;
 
-  $self->url(${$self->cm->catalog->data}[1]);
+  $self->url(${$self->cm->catalog->providers}[1]);
   
   my $http_response = (
     $connection->connection->get(
@@ -40,7 +40,7 @@ sub parse_service_provider {
   my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
   print $body;
 
-  $parser->parse_xml_ressources($self->url, $body, $rdf_query, $self->data);
+  $parser->parse_xml_ressources($self->url, $body, $rdf_query, $self->services);
 }
 
 1;
