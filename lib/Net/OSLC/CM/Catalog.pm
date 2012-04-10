@@ -40,10 +40,31 @@ sub parse_catalog {
   my $parser = shift;
   my $body = shift;
 
+  my $model = $parser->parse_xml_ressources($self->url, $body);
+  return $model;
+}
+
+
+sub query_providers {
+  my $self = shift;
+  my $parser = shift;
+  my $model = shift;
+
   my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
-  
-  $parser->parse_xml_ressources($self->url, $body, $rdf_query, $self->cm->catalog->providers);
-  print @{$self->cm->catalog->providers} . "\n";
+  $parser->query_rdf($model, $rdf_query, $self->providers);
+
+  my $i = 0;
+  for ( $i=0; $i < @{$self->providers}; $i++){
+    if ( ${$self->providers}[$i] =~ m/{ url=<(.*)> }/){
+      my $provider = $1;
+      #TODO: deal with the general case
+      $provider =~ s/localhost/192.168.56.101/;
+      ${$self->providers}[$i] = $provider;
+    }
+
+
+  }
+
 }
 
 1;

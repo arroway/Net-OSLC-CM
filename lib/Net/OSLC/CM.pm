@@ -60,7 +60,8 @@ sub get_provider_catalog_resource {
   my $self =shift;
   
   my $body_catalog = $self->catalog->get_catalog($self->connection);
-  $self->catalog->parse_catalog($self->parser, $body_catalog);
+  my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
+  $self->catalog->query_providers($self->parser, $model);
 }
 
 sub create_catalog {

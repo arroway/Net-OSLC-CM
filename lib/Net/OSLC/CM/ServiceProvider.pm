@@ -37,10 +37,11 @@ sub parse_service_provider {
   my $self = shift;
   my ($parser, $body) = @_;
 
-  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
   print $body;
-
-  $parser->parse_xml_ressources($self->url, $body, $rdf_query, $self->services);
+  my $model = $parser->parse_xml_ressources($self->url, $body);
+  
+  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
+  $parser->query_rdf($model, $rdf_query, $self->services);  
 }
 
 1;
