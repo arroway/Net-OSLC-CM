@@ -34,12 +34,12 @@ sub query_rdf {
     PREFIX dcterms: <http://purl.org/dc/terms/>
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>'
     . $rdf_query);
- 
-   my $iterator = $query->execute( $model );
-   while (my $row = $iterator->next) {
-       print $row;
-       push(@{$result_storage}, $row);
-   }
+
+  my $iterator = $query->execute( $model );
+  while (my $row = $iterator->next) {
+     print $row;
+     push(@{$result_storage}, $row);
+  }
 }
 
 1;
