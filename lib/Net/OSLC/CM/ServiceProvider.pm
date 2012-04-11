@@ -15,14 +15,22 @@ has url => (
 has services => (
   isa => 'ArrayRef',
   is => 'rw',
+  default => sub {[]},
+);
+
+has queryBase => (
+  isa => 'ArrayRef',
+  is => 'rw',
+  default => sub { [] },
 );
 
 sub get_service_provider {
   my $self = shift;
   my $connection = shift;
 
-  $self->url(${$self->cm->catalog->providers}[1]);
-  
+  $self->url(${$self->cm->catalog->providers}[2]);
+  print "\n" . $self->url . "\n";
+
   my $http_response = (
     $connection->connection->get(
     $self->url,
@@ -36,12 +44,29 @@ sub get_service_provider {
 sub parse_service_provider {
   my $self = shift;
   my ($parser, $body) = @_;
-
-  print $body;
+  
   my $model = $parser->parse_xml_ressources($self->url, $body);
   
-  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
-  $parser->query_rdf($model, $rdf_query, $self->services);  
+}
+
+sub query_base {
+  my $self = shift;
+  my ($parser, $model) = @_;
+
+  my $rdf_query = "SELECT ?y WHERE  
+                    {
+                    ?z oslc:queryCapability ?x .
+                    ?x oslc:queryBase ?y .
+                    }";
+  $parser->query_rdf($model, $rdf_query, $self->queryBase);
+
+  if ( ${$self->queryBase}[0] =~ m/{ y=<(.*)> }/){
+    my $queryBase = $1;
+    #TODO: deal with the general case
+    $queryBase =~ s/localhost/192.168.56.101/;
+    ${$self->queryBase}[0] = $queryBase;
+    }
+  print ${$self->queryBase}[0];
 }
 
 1;
