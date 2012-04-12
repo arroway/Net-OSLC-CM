@@ -44,7 +44,7 @@ An OSLC Service Provider Catalog Document describes a catalog whose entries desc
 
 =cut
 
-sub get_provider_resources {
+sub get_oslc_resources {
   my $self = shift;
   
   $self->create_catalog;
