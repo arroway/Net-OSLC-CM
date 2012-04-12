@@ -2,6 +2,14 @@ package Net::OSLC::CM::ServiceProvider;
 
 use Any::Moose;
 
+=head1 NAME
+
+Net::OSLC::CM::ServiceProvider
+
+=head1 DESCRIPTION
+
+=cut
+
 has cm => (
   isa => 'Net::OSLC::CM',
   is => 'rw',
@@ -24,6 +32,12 @@ has queryBase => (
   default => sub { [] },
 );
 
+=head2 get_service_provider connection
+
+Performs a GET HTTP request to get xml data for a given Service Provider.
+
+=cut
+
 sub get_service_provider {
   my $self = shift;
   my $connection = shift;
@@ -41,6 +55,14 @@ sub get_service_provider {
   return $body;
 }
 
+=head2 parse_service_provider parser rdf_data
+
+Parses xml data that we got from HTTP request for a given Service Provider.
+Parsing the data into a RDF model, we'll retrieve the information we need to perform queries
+and change requests. 
+
+=cut
+
 sub parse_service_provider {
   my $self = shift;
   my ($parser, $body) = @_;
@@ -48,6 +70,15 @@ sub parse_service_provider {
   my $model = $parser->parse_xml_ressources($self->url, $body);
   
 }
+
+
+=head2 query_base
+
+To perform an HTTP GET query, an OSLC client starts with the base URI 
+as defined by the oslc:queryBase property of a Query Capability, and 
+appends to it query parameters in a syntax supported by the service.
+
+=cut
 
 sub query_base {
   my $self = shift;

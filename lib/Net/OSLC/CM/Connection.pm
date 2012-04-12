@@ -4,10 +4,15 @@ use Any::Moose;
 use LWP::UserAgent;
 use HTTP::MessageParser;
 
+=head1 NAME
 
-=head1 
-Connection to a server with the given url.
+Net::OSLC::CM::Connection
+
+=head1 DESCRIPTION
+
+Connects to a server with the given URL.
 Will probably deal with authentication later on.
+
 =cut
 
 

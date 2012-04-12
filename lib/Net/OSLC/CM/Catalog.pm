@@ -2,6 +2,22 @@ package Net::OSLC::CM::Catalog;
 
 use Any::Moose;
 
+=head1 NAME
+
+Net::OSLC::CM::Catalog - Service Provider Catalog Ressource
+
+=head1 DESCRIPTION
+
+The Catalog enables OSLC clients to find Service Providers offered. 
+These catalogs may contain other nested catalogs as well as 
+service providers.
+
+=head1 TODO
+This current implementation assumes such a Catalog exists, and that it 
+references Service Providers only (not other catalogs).
+
+=cut
+
 has cm => (
   isa => 'Net::OSLC::CM',
   is => 'rw',
@@ -19,6 +35,15 @@ has providers => (
 );
  
 
+=head2 get_catalog connection
+
+Perfoms a GET HTTP request to get xml data from the Service Provider Catalog
+of an OSLC service.
+At the moment, I assume that document actually exists (according to OSLC-CM
+specifications, this may not be always the case)
+
+=cut
+
 sub get_catalog {
   my $self = shift;
   my $connection = shift;
@@ -35,6 +60,15 @@ sub get_catalog {
   return $body;  
 }
 
+=head2 parse_catalog parser xml_data
+
+Parses xml data that we got when we request the Service Provider
+Catalog ressource.
+Parsing the data into a RDF model, we'll retrieve the URIs of every Service
+Provider that is referenced. 
+
+=cut
+
 sub parse_catalog {
   my $self = shift;
   my $parser = shift;
@@ -44,6 +78,13 @@ sub parse_catalog {
   return $model;
 }
 
+=head2 query_providers parser rdf_model
+
+Performs a SPARQL query to get the URIs of every Service Provider that 
+is referenced in the Service Providers Catalog.
+We store the result in $self->providers. 
+
+=cut
 
 sub query_providers {
   my $self = shift;

@@ -11,6 +11,12 @@ use HTTP::MessageParser;
 
 our $VERSION = '0.01';
 
+=head1 NAME
+
+Net::OSLC::CM - module to help implement a OSLC client for Change Management
+
+=cut
+
 has url => (
   isa => 'Str',
   is => 'ro'
@@ -37,9 +43,12 @@ has parser => (
   is => 'rw',
 );
 
-=head1
-OSLC CM service providers must provide a Service Provider Resource, and *MAY* provide a Service Provider Catalog Resource.
-Get an OSLC Service Provider Catalog Document from a Service Provider Catalog Resource (via GET method)
+=head2 get_oslc_resources
+
+OSLC CM service providers must provide a Service Provider Resource, 
+and *MAY* provide a Service Provider Catalog Resource.
+Gets an OSLC Service Provider Catalog Document from a Service Provider 
+Catalog Resource (via GET method) and Service Providers resources.
 An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
 
 =cut
@@ -56,6 +65,12 @@ sub get_oslc_resources {
   $self->get_service_providers;
 }
 
+=head2 get_provider_catalog_resource
+
+Gets if it exists the Service Provider Catalog and performs a query to get the referenced Service Providers .
+
+=cut
+ 
 sub get_provider_catalog_resource {
   my $self =shift;
   
@@ -63,6 +78,12 @@ sub get_provider_catalog_resource {
   my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
   $self->catalog->query_providers($self->parser, $model);
 }
+
+=head2 create_catalog
+
+Creates an instance of the Net::OSLC::CM:Catalog class.
+
+=cut
 
 sub create_catalog {
   my $self = shift;
@@ -81,6 +102,12 @@ sub create_catalog {
       cm => $self)
   );
 }
+
+=head2 get_service_providers
+
+Gets Service Providers information.
+
+=cut
 
 sub get_service_providers {
   my $self =shift;
@@ -103,32 +130,3 @@ sub get_service_providers {
 1;
 
 __END__
-
-=head1 NAME
-
-Net::OSLC::CM - Interact with an OSLC Service Provider Catalog, respecting specifications of OSLC Change Management v.2
-
-=head1 SYNOPSIS
-
-
-=head1 DESCRIPTION
-
-
-=head2 EXPORT
-
-=head1 SEE ALSO
-
-=head1 AUTHOR
-
-Stephanie Ouillon, E<lt>stephanie.ouillon@telecom-sudparis.eu<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2012 by Stephanie Ouillon
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.12.3 or,
-at your option, any later version of Perl 5 you may have available.
-
-
-=cut
