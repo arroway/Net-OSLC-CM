@@ -34,7 +34,7 @@ sub parse_xml_ressources {
 
   # we only want rdf data from the body of the HTTP response
   $rdf_data =~ m/(<rdf.*RDF>)/;
-  #print $rdf_data;
+  print $rdf_data;
 
   my $store = RDF::Trine::Store::Memory->new();
   my $parser = RDF::Trine::Parser->new('rdfxml');
@@ -54,16 +54,18 @@ sub query_rdf {
   my $self = shift;
   my ($model, $rdf_query, $result_storage) = @_;
 
-  my $query = RDF::Query->new('
+  my $string_query = "
     PREFIX oslc:    <http://open-services.net/ns/core#>
     PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>'
-    . $rdf_query);
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+    . $rdf_query;
+
+  my $query = RDF::Query->new($string_query);
 
   my $iterator = $query->execute( $model );
   while (my $row = $iterator->next) {
      print $row;
-     push(@{$result_storage}, $row);
+     push($result_storage, $row);
   }
 }
 
