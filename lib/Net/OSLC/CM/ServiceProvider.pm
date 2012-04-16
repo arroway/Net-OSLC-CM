@@ -53,8 +53,7 @@ Performs a GET HTTP request to get xml data for a given Service Provider.
 sub get_service_provider {
   my $self = shift;
   my $connection = shift;
-
-  $self->url(${$self->cm->catalog->providers}[2]);
+  
   print "\n" . $self->url . "\n";
 
   my $http_response = (

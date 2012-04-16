@@ -28,7 +28,7 @@ has url => (
   is => 'rw',
 );
 
-has providers => (
+has providers_url => (
   isa => 'ArrayRef',
   is => 'rw',
   default => sub { [] },
@@ -90,17 +90,20 @@ sub query_providers {
   my $self = shift;
   my $parser = shift;
   my $model = shift;
+  my $arrayref = [];
 
   my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
-  $parser->query_rdf($model, $rdf_query, $self->providers);
+  $parser->query_rdf($model, $rdf_query, $arrayref);
 
   my $i = 0;
-  for ( $i=0; $i < @{$self->providers}; $i++){
-    if ( ${$self->providers}[$i] =~ m/{ url=<(.*)> }/){
+  for ( $i=0; $i < @{$arrayref}; $i++){
+    if ( ${$arrayref}[$i] =~ m/{ url=<(.*)> }/){
       my $provider = $1;
-      #TODO: deal with the general case
-      $provider =~ s/localhost/192.168.56.101/;
-      ${$self->providers}[$i] = $provider;
+      if ($provider =~ m/http:\/\/(.*)/ and $provider !~ m/$self->url/){
+        #TODO: deal with the general case
+        $provider =~ s/localhost/192.168.56.101/;
+        push($self->providers_url,$provider);
+      }
     }
 
 

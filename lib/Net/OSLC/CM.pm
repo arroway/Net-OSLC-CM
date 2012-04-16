@@ -62,7 +62,15 @@ sub get_oslc_resources {
   );
   
   $self->get_provider_catalog_resource;
-  $self->get_service_providers;
+  my @providers = $self->get_service_providers;
+  
+  my @tickets = $self->get_tickets;
+  return @tickets;
+}
+
+#then do your search
+sub get_tickets {
+   
 }
 
 =head2 get_provider_catalog_resource
@@ -108,6 +116,7 @@ sub create_catalog {
 For a given Catalog, gets Service Providers resources and properties: 
 queryCapability, resourceShape and creationFactory.
 
+Returns a list of Service Providers objects.
 =cut
 
 =head3 Query Capability
@@ -141,42 +150,47 @@ Enables clients to create new resources via HTTP POST.
 
 sub get_service_providers {
   my $self =shift;
+  my @providers= [];
 
-  my $provider = Net::OSLC::CM::ServiceProvider->new(cm => $self);
+  my $i = 0;
+  for( $i=0; $i < @{$self->catalog->providers_url}; $i++){
+
+    my $url = ${$self->catalog->providers_url}[$i];
+    if (defined($url)){
+      my $provider = Net::OSLC::CM::ServiceProvider->new(
+                      cm => $self,
+                      url => $url);
+      
+      $self->_get_service_provider($provider);
+      push(@providers, $provider);                         
+    }
+  }
+  return @providers;
+}
+
+sub _get_service_provider {
+  
+  my $self = shift;
+  my $provider = shift;
+
   my $body_provider = $provider->get_service_provider($self->connection, $self->catalog);
   my $model =  $provider->parse_service_provider($self->parser, $body_provider);
 
   $provider->query_resource($self->parser, $model, 
-                            "queryCapability", 
-                            "queryBase", 
-                            $provider->queryBase);
+                              "queryCapability", 
+                              "queryBase", 
+                              $provider->queryBase);
   
   $provider->query_resource($self->parser, $model, 
-                            "queryCapability", 
-                            "resourceShape", 
-                            $provider->resourceShape);
+                              "queryCapability", 
+                              "resourceShape", 
+                              $provider->resourceShape);
  
   $provider->query_resource($self->parser, $model, 
-                            "creationFactory", 
-                            "resourceShape", 
-                            $provider->creationFactory);
+                              "creationFactory", 
+                               "resourceShape", 
+                               $provider->creationFactory);
 
-
-  #my $body_provider_resources = $provider->discover_oslc_resources($self->connection);
-  #$model = $provider->parse_service_provider($self->parser, $body_provider_resources);
- 
-  #$provider->query_resource($self->parser, $model, 
-  #                          "queryCapability", 
-  #                          "resourceShape", 
-  #                          $provider->resourceShape);
-
-  #we wanna create in sd every ticket that is not present (easiest part) or that is changed 
-  #from the distant bugtracker
-  #
-  #for each entry in $self>catalog-data, 
-  #create a new ServiceProvider if necessary
-  #deal with it (check if we have the ticket in sd)
-  #delete it if we don't want anything
 }
 
 1;
