@@ -34,7 +34,7 @@ sub parse_xml_ressources {
 
   # we only want rdf data from the body of the HTTP response
   $rdf_data =~ m/(<rdf.*RDF>)/;
-  print $rdf_data;
+  #print $rdf_data;
 
   my $store = RDF::Trine::Store::Memory->new();
   my $parser = RDF::Trine::Parser->new('rdfxml');

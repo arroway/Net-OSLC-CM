@@ -120,14 +120,11 @@ Once we found the resources, we can request the RDF data.
 
 sub discover_oslc_resources {
   my $self = shift;
-  my $connection = shift;
-
-  #by default, if nothing is specified but the queryBase, the service provides all the properties
-  my $queryBase = ${$self->queryBase}[1];
+  my ($connection, $url) = @_;
 
   my $http_response = (
     $connection->connection->get(
-    "http://192.168.56.101:8282/bugz/creationshape?productId=1",
+    $url, 
     'Accept' => 'application/rdf+xml') 
   );
 
