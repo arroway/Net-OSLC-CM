@@ -55,11 +55,16 @@ sub get_catalog {
       $self->url,
       'Accept' => 'application/rdf+xml')
   );
-
-  my $body = $connection->get_http_body($http_response);
-  return $body;  
+  
+  if ($http_response->is_success) {
+    my $body = $connection->get_http_body($http_response);
+    return $body;
+  }
+  else {
+    print $http_response->status_line . "\n";
+    return;
+  }
 }
-
 =head2 parse_catalog parser xml_data
 
 Parses xml data that we got when we request the Service Provider

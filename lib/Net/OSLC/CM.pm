@@ -78,8 +78,12 @@ sub get_provider_catalog_resource {
   my $self =shift;
   
   my $body_catalog = $self->catalog->get_catalog($self->connection);
-  my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
-  $self->catalog->query_providers($self->parser, $model);
+  if (defined($body_catalog){
+    my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
+    $self->catalog->query_providers($self->parser, $model);
+  } else {
+    print "No catalog available.\n"
+  }
 }
 
 =head2 create_catalog
@@ -168,25 +172,26 @@ sub _get_service_provider {
   
   my $self = shift;
   my $provider = shift;
-
-  my $body_provider = $provider->get_service_provider($self->connection, $self->catalog);
-  my $model =  $provider->parse_service_provider($self->parser, $body_provider);
-
-  $provider->query_resource($self->parser, $model, 
-                              "queryCapability", 
-                              "queryBase", 
-                              $provider->queryBase);
   
-  $provider->query_resource($self->parser, $model, 
-                              "queryCapability", 
-                              "resourceShape", 
-                              $provider->resourceShape);
- 
-  $provider->query_resource($self->parser, $model, 
-                              "creationFactory", 
-                               "resourceShape", 
-                               $provider->creationFactory);
+  my $body_provider = $provider->get_service_provider($self->connection, $self->catalog);
+  if (defined($body_provider)){
+      my $model =  $provider->parse_service_provider($self->parser, $body_provider);
 
+      $provider->query_resource($self->parser, $model, 
+                                  "queryCapability", 
+                                  "queryBase", 
+                                  $provider->queryBase);
+  
+     $provider->query_resource($self->parser, $model, 
+                                  "queryCapability", 
+                                  "resourceShape", 
+                                  $provider->resourceShape);
+ 
+     $provider->query_resource($self->parser, $model, 
+                                  "creationFactory", 
+                                   "resourceShape", 
+                                   $provider->creationFactory);
+ }
 }
 
 sub get_tickets {
@@ -199,8 +204,10 @@ sub get_tickets {
     my $url = ${$provider->queryBase}[0];
     
     my $body = $provider->discover_oslc_resources($self->connection, $url);
-    my $model = $provider->parse_service_provider($self->parser, $body);
-    print $body . "\n";
+    if (defined($body)){
+      my $model = $provider->parse_service_provider($self->parser, $body);
+      print $body . "\n";
+    }
     #my $rdf_query = "SELECT ?y WHERE
     #               {
     #               }";

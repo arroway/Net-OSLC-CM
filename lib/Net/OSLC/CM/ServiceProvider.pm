@@ -61,9 +61,15 @@ sub get_service_provider {
     $self->url,
     'Accept' => 'application/rdf+xml') 
   );
-
-  my $body = $connection->get_http_body($http_response);
-  return $body;
+  
+  if ($http_response->is_success) {
+    my $body = $connection->get_http_body($http_response);
+    return $body; 
+   }
+   else {
+     print $http_response->status_line . "\n";
+     return;
+   }
 }
 
 =head2 parse_service_provider parser rdf_data
@@ -128,8 +134,15 @@ sub discover_oslc_resources {
     'Accept' => 'application/rdf+xml') 
   );
 
-  my $body = $connection->get_http_body($http_response);
-  return $body;
+  if ($http_response->is_success) {
+    my $body = $connection->get_http_body($http_response);
+    return $body; 
+   }
+   else {
+     print $http_response->status_line . "\n";
+     return;
+   }
+
 }
 
 
