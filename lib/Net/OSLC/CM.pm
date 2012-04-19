@@ -78,7 +78,7 @@ sub get_provider_catalog_resource {
   my $self =shift;
   
   my $body_catalog = $self->catalog->get_catalog($self->connection);
-  if (defined($body_catalog){
+  if (defined($body_catalog)){
     my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
     $self->catalog->query_providers($self->parser, $model);
   } else {
