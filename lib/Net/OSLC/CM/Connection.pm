@@ -18,7 +18,20 @@ Will probably deal with authentication later on.
 
 has url => (
   isa => 'Str',
-  is  => 'ro'
+  is  => 'ro',
+  required => 1
+);
+
+has username => (
+  isa => 'Str',
+  is => 'ro',
+  required => 1
+);
+
+has password => (
+  isa => 'Str',
+  is => 'ro',
+  required => 1
 );
 
 has connection => (
@@ -27,7 +40,7 @@ has connection => (
   lazy =>1,
   default => sub {
     my $self = shift;
-    my $connection = LWP::UserAgent->new();
+    my $connection = LWP::UserAgent->new(keep_alive => 1);
     return $connection;
   }
 );

@@ -50,18 +50,20 @@ Performs a GET HTTP request to get xml data for a given Service Provider.
 
 =cut
 
-sub get_service_provider {
+sub get_data {
   my $self = shift;
   my $connection = shift;
-  
-  print "\n" . $self->url . "\n";
+  my $url = shift;
 
-  my $http_response = (
-    $connection->connection->get(
-    $self->url,
-    'Accept' => 'application/rdf+xml') 
-  );
+  print "\n" . $url . "\n";
   
+  my $request = HTTP::Request->new(GET => $url);
+  
+  $request->header('Accept' => 'application/rdf+xml');
+  $request->authorization_basic($connection->username, $connection->password);
+  
+  my $http_response = $connection->connection->request($request);
+
   if ($http_response->is_success) {
     my $body = $connection->get_http_body($http_response);
     return $body; 
@@ -118,32 +120,5 @@ sub query_resource {
     }
   }
 }
-
-=head2
-
-Once we found the resources, we can request the RDF data.
-=cut
-
-sub discover_oslc_resources {
-  my $self = shift;
-  my ($connection, $url) = @_;
-
-  my $http_response = (
-    $connection->connection->get(
-    $url, 
-    'Accept' => 'application/rdf+xml') 
-  );
-
-  if ($http_response->is_success) {
-    my $body = $connection->get_http_body($http_response);
-    return $body; 
-   }
-   else {
-     print $http_response->status_line . "\n";
-     return;
-   }
-
-}
-
 
 1;

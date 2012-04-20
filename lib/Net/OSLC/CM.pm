@@ -20,18 +20,12 @@ Net::OSLC::CM - module to help implement a OSLC client for Change Management
 
 has url => (
   isa => 'Str',
-  is => 'ro'
+  is => 'rw',
 );
 
 has connection => (
   isa => 'Net::OSLC::CM::Connection',
   is => 'rw',
-  lazy => 1,
-  default => sub {
-    my $self = shift;
-    my $m = Net::OSLC::CM::Connection->new(url => $self->url);
-    return $m;
-  }
 );
 
 has catalog => (
@@ -56,6 +50,19 @@ has parser => (
   is => 'rw',
 );
 
+sub BUILDARGS {
+  my $self = shift;
+  my %args = @_;
+  
+  $args{connection} = Net::OSLC::CM::Connection->new(
+    url      => delete $args{url},
+    username => delete $args{username},
+    password => delete $args{password}
+  );
+
+  return $self->SUPER::BUILDARGS(%args);
+}
+
 =head2 get_oslc_resources
 
 OSLC CM service providers must provide a Service Provider Resource, 
@@ -68,7 +75,8 @@ An OSLC Service Provider Catalog Document describes a catalog whose entries desc
 
 sub get_oslc_resources {
   my $self = shift;
-  
+  $self->url($self->connection->url);
+
   $self->create_catalog;
   $self->parser( 
     Net::OSLC::CM::Parser->new(cm => $self) 
@@ -184,7 +192,7 @@ sub _get_service_provider {
   my $self = shift;
   my $provider = shift;
   
-  my $body_provider = $provider->get_service_provider($self->connection, $self->catalog);
+  my $body_provider = $provider->get_data($self->connection, $provider->url);
   if (defined($body_provider)){
       my $model =  $provider->parse_service_provider($self->parser, $body_provider);
 
@@ -212,8 +220,8 @@ sub get_tickets {
   for ( $i=1 ; $i < @{$self->providers} ; $i++) {
     my $provider = ${$self->providers}[$i];
     my $url = ${$provider->queryBase}[0];
-    my $body = $provider->discover_oslc_resources($self->connection, $url);
-    
+    my $body = $provider->get_data($self->connection, $url);
+
     if (defined($body)){
       my $model = $provider->parse_service_provider($self->parser, $body);
       $self->_get_ticket($model);

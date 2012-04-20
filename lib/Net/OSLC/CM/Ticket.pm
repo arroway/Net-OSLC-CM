@@ -24,6 +24,34 @@ has title => (isa => 'Str', is => 'rw');
 sub load {
   my $self = shift;
 
+  my @properties = $self->meta->get_attribute_list;
+  foreach my $property (@properties){
+    load_property($property);
+  } 
+
+}
+
+sub get_ticket {
+  my $self = shift;
+  my $connection = shift;
+
+  print $self->url . "\n";
+
+  my $request = HTTP::Request->new(GET => $self->url);
+
+  $request->header('Accept' => 'application/rdf+xml');
+  $request->authorization_basic($connection->username, $connection->password);
+
+  my $http_response = $connection->connection->request($request);
+  
+  if ($http_response->is_success) {
+    my $body = $connection->get_http_body($http_response);
+    return $body; 
+   }
+   else {
+     print $http_response->status_line . "\n";
+     return;
+   }
 }
 
 

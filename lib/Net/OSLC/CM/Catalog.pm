@@ -50,11 +50,13 @@ sub get_catalog {
 
   # The service provider should provide a catalog in RDF or HTML.
   # We ask for the XML version. 
-  my $http_response = (
-    $connection->connection->get(
-      $self->url,
-      'Accept' => 'application/rdf+xml')
-  );
+
+  my $request = HTTP::Request->new(GET => $self->url);
+
+  $request->header('Accept' => 'application/rdf+xml');
+  $request->authorization_basic($connection->username, $connection->password);
+
+  my $http_response = $connection->connection->request($request);
   
   if ($http_response->is_success) {
     my $body = $connection->get_http_body($http_response);
