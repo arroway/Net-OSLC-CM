@@ -55,13 +55,15 @@ sub query_rdf {
   my ($model, $rdf_query, $result_storage) = @_;
 
   my $string_query = "
-    PREFIX oslc:    <http://open-services.net/ns/core#>
     PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX oslc:    <http://open-services.net/ns/core#>
+    PREFIX oslc_cm: <http://open-services.net/ns/cm#> "
     . $rdf_query;
-
+ 
+    
   my $query = RDF::Query->new($string_query);
-
   my $iterator = $query->execute( $model );
   while (my $row = $iterator->next) {
      print $row;

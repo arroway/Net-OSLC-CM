@@ -5,6 +5,7 @@ use Net::OSLC::CM::Catalog;
 use Net::OSLC::CM::Connection;
 use Net::OSLC::CM::Parser;
 use Net::OSLC::CM::ServiceProvider;
+use Net::OSLC::CM::Ticket;
 use RDF::Trine;
 use RDF::Query;
 use HTTP::MessageParser;
@@ -38,6 +39,12 @@ has catalog => (
   is => 'rw'
 );
 
+has tickets => (
+  isa => 'ArrayRef',
+  is => 'rw',
+  default => sub {[]} 
+);
+
 has parser => (
   isa => 'Net::OSLC::CM::Parser',
   is => 'rw',
@@ -64,8 +71,8 @@ sub get_oslc_resources {
   $self->get_provider_catalog_resource;
   my @providers = $self->get_service_providers;
   
-  my @tickets = $self->get_tickets(\@providers);
-  return @tickets;
+  $self->get_tickets(\@providers);
+  return $self->tickets;
 }
 
 =head2 get_provider_catalog_resource
@@ -197,28 +204,50 @@ sub _get_service_provider {
 sub get_tickets {
   my $self = shift;
   my $providers = shift;  
-
+  
   my $i; 
   for ( $i=1 ; $i < @{$providers} ; $i++) {
     my $provider = ${$providers}[$i];
     my $url = ${$provider->queryBase}[0];
-    
     my $body = $provider->discover_oslc_resources($self->connection, $url);
+    
     if (defined($body)){
       my $model = $provider->parse_service_provider($self->parser, $body);
-      print $body . "\n";
+      $self->_get_ticket($model);
     }
-    #my $rdf_query = "SELECT ?y WHERE
-    #               {
-    #               }";
-     
-
-   #$self->parser->query-rdf($model, $rdf_query, $result);
- } 
- #return an array
+  }
 }
 
-
+sub _get_ticket{
+  my $self = shift;
+  my $model = shift;
+  
+  my $resource = "member";
+  my $property = "ChangeRequest";
+  #XXX: improve the query
+  my $rdf_query = "SELECT ?url WHERE
+                     {
+                     ?url rdf:type ?u
+                     }";
+                     #?z rdfs:" . $resource . " ?x .
+                     #?x oslc_cm:" . $property . " ?y .  
+                     #}";
+  my $result = [];
+  $self->parser->query_rdf($model, $rdf_query, $result);
+  
+  my $i = 0;
+  for ( $i=0; $i < @{$result}; $i++){
+    if ( ${$result}[$i] =~ m/{ url=<(.*)> }/){
+      my $res = $1;
+      if ($res =~ m/http:\/\/(.*)/){
+        #TODO: deal with the general case
+        $res =~ s/localhost/192.168.56.101/;
+        my $ticket = Net::OSLC::CM::Ticket->new(url => $res);
+        push(@{$self->tickets}, $ticket);
+      }
+    }
+  }
+}
 
 1;
 
