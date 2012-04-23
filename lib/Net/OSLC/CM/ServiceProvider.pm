@@ -85,7 +85,7 @@ sub parse_service_provider {
   my ($parser, $body) = @_;
   
   my $model = $parser->parse_xml_ressources($self->url, $body);
-  
+  return $model; 
 }
 
 =head2 query_resource
