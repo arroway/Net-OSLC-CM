@@ -39,6 +39,12 @@ has catalog => (
   is => 'rw'
 );
 
+has providers => (
+  isa => 'ArrayRef',
+  is => 'rw',
+  default => sub {[]}
+);
+
 has tickets => (
   isa => 'ArrayRef',
   is => 'rw',
@@ -69,9 +75,9 @@ sub get_oslc_resources {
   );
   
   $self->get_provider_catalog_resource;
-  my @providers = $self->get_service_providers;
+  $self->get_service_providers;
   
-  $self->get_tickets(\@providers);
+  $self->get_tickets($self->providers);
   return $self->tickets;
 }
 
@@ -156,7 +162,6 @@ Enables clients to create new resources via HTTP POST.
 
 sub get_service_providers {
   my $self =shift;
-  my @providers;
 
   my $i = 0;
   for( $i=0; $i < @{$self->catalog->providers_url}; $i++){
@@ -169,10 +174,9 @@ sub get_service_providers {
       
       $self->_get_service_provider($provider);
     
-      push(@providers, $provider);                         
+      push(@{$self->providers}, $provider);                         
     }
   }
-  return @providers;
 }
 
 sub _get_service_provider {
@@ -203,11 +207,10 @@ sub _get_service_provider {
 
 sub get_tickets {
   my $self = shift;
-  my $providers = shift;  
   
   my $i; 
-  for ( $i=1 ; $i < @{$providers} ; $i++) {
-    my $provider = ${$providers}[$i];
+  for ( $i=1 ; $i < @{$self->providers} ; $i++) {
+    my $provider = ${$self->providers}[$i];
     my $url = ${$provider->queryBase}[0];
     my $body = $provider->discover_oslc_resources($self->connection, $url);
     
