@@ -86,6 +86,7 @@ sub get_oslc_resources {
   $self->get_service_providers;
   
   $self->get_tickets($self->providers);
+  $self->load_tickets();
   return $self->tickets;
 }
 
@@ -97,7 +98,7 @@ Gets if it exists the Service Provider Catalog and performs a query to get the r
  
 sub get_provider_catalog_resource {
   my $self =shift;
-  
+
   my $body_catalog = $self->catalog->get_catalog($self->connection);
   if (defined($body_catalog)){
     my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
@@ -229,7 +230,7 @@ sub get_tickets {
   }
 }
 
-sub _get_ticket{
+sub _get_ticket {
   my $self = shift;
   my $model = shift;
   
@@ -256,6 +257,22 @@ sub _get_ticket{
         my $ticket = Net::OSLC::CM::Ticket->new(url => $res);
         push(@{$self->tickets}, $ticket);
       }
+    }
+  }
+}
+
+sub load_tickets {
+  my $self = shift;
+  my $i; 
+  
+  for ( $i=1 ; $i < @{$self->tickets} ; $i++) {
+    my $ticket = ${$self->tickets}[$i];
+    print $ticket->url . "\n";
+    my $body = $ticket->get_ticket($self->connection);
+    
+    if (defined($body)){
+      my $model = $ticket->parse_ticket($self->parser, $body);
+      $ticket->load();
     }
   }
 }

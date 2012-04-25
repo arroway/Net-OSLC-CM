@@ -54,6 +54,18 @@ sub get_ticket {
    }
 }
 
+sub parse_ticket {
+  my $self = shift;
+  my ($parser, $body) = @_;
+
+  my $model = $parser->parse_xml_ressources($self->url, $body);
+  return $model;
+}
+
+sub load_property {
+  my $self = shift;
+  my $property = shift;
+}
 
 #update
 
