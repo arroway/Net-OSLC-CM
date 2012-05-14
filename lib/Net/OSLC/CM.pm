@@ -237,7 +237,7 @@ sub _get_ticket {
   my $resource = "member";
   my $property = "ChangeRequest";
   #XXX: improve the query
-  my $rdf_query = "SELECT ?url WHERE
+  my $rdf_query = "SELECT DISTINCT ?url WHERE
                      {
                      ?url rdf:type ?u
                      }";
