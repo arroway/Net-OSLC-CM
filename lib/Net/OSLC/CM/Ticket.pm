@@ -4,6 +4,9 @@ use Any::Moose;
 use Net::OSLC::CM::Connection;
 use Net::OSLC::CM::Parser;
 use Net::OSLC::CM::ServiceProvider;
+use RDF::Helper;
+
+has model => (isa => 'RDF::Trine::Model', is => 'rw');
 
 has url =>(isa => 'Str', is => 'rw');
 
@@ -23,11 +26,48 @@ has title => (isa => 'Str', is => 'rw');
 #search and update a ticket
 sub load {
   my $self = shift;
+  my ($parser) = @_;
 
-  my @properties = $self->meta->get_attribute_list;
-  foreach my $property (@properties){
-    load_property($property);
-  } 
+  my $rdf = RDF::Helper->new(
+    BaseInterface => 'RDF:Trine',
+    namespaces => { 
+      dcterms => 'http://purl.org/dc/terms/',
+      rdf => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      oslc => 'http://open-services.net/ns/core#',
+      oslc_cm => 'ttp://open-services.net/ns/cm#',
+    } 
+ );
+
+  $rdf->model($self->model); 
+  my @stmts = $rdf->get_triples();
+  
+  for(my $i = 0; $i < @stmts; $i++){
+    my $subject = $stmts[$i][0];
+    my $predicate = $stmts[$i][1];
+    my $object = $stmts[$i][2];
+    
+    print "subject: " . $subject . " - predicate :" . $predicate . " - object: " . $object . "\n";
+  }
+  #foreach (@stmts){
+  #    print "answer  $_ \n";
+  #}
+ 
+  #print join("\n",@stmts),"\n";
+
+
+#  my @properties = $self->meta->get_attribute_list;
+#  foreach my $property (@properties){
+#    $self->load_property($parser, $property);
+#  }
+ 
+  # my $rdf_query = "SELECT ?identifier ?title WHERE 
+  #                    {
+  #                    ?t dcterms:identifier   ?identifier .
+  #                    ?t dcterms:title        ?title .
+  #                    
+  #                    }"; 
+  #my $result = [];
+  #$parser->query_rdf($self->model, $rdf_query, $result);
 
 }
 
@@ -56,15 +96,24 @@ sub get_ticket {
 
 sub parse_ticket {
   my $self = shift;
-  my ($parser, $body) = @_;
+  my ($parser, $body) = @_ ;
 
   my $model = $parser->parse_xml_ressources($self->url, $body);
-  return $model;
+  $self->model($model);
+  return $self->model;
 }
 
 sub load_property {
   my $self = shift;
+  my ($parser) = @_;
   my $property = shift;
+
+  my $rdf_query = "SELECT DISTINCT ?x WHERE 
+                      {
+                      ?t dcterms:identifier ?x .
+                      }"; 
+  my $result = [];
+  $parser->query_rdf($self->model, $rdf_query, $result);
 }
 
 #update

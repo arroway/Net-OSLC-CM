@@ -272,7 +272,7 @@ sub load_tickets {
     
     if (defined($body)){
       my $model = $ticket->parse_ticket($self->parser, $body);
-      $ticket->load();
+      $ticket->load($self->parser);
     }
   }
 }
