@@ -9,7 +9,7 @@ To install this module type the following:
 
    perl Makefile.PL
    make
-   make test
+   make test (optionnnal)
    make install
 
 DEPENDENCIES
@@ -17,6 +17,11 @@ DEPENDENCIES
 	- HTTP::MessageParser
 	- RDF::Trine
 	- RDF::Query
+
+!! IMPORTANT - NOTES !!
+
+This module is tested using SD and the OSLC-CM connector for Bugzilla. I am working on the localhost and using HTTP basic auth. 
+You can find the code and a tutorial to run the Bugzilla connector here: http://wiki.eclipse.org/Lyo/BuildBugzilla
 	
 COPYRIGHT
 
