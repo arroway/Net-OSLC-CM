@@ -9,3 +9,4 @@ lib/Net/OSLC/CM/Connection.pm
 lib/Net/OSLC/CM/Parser.pm
 lib/Net/OSLC/CM/ServiceProvider.pm
 lib/Net/OSLC/CM/Ticket.pm
+lib/Net/OSLC/CM/Util.pm
