@@ -55,8 +55,6 @@ sub get_data {
   my $connection = shift;
   my $url = shift;
 
-  print "\n" . $url . "\n";
-  
   my $request = HTTP::Request->new(GET => $url);
   
   $request->header('Accept' => 'application/rdf+xml');
@@ -112,9 +110,6 @@ sub query_resource {
   my $i = 0;
   for ( $i=0; $i < @{$result}; $i++){
     if ( ${$result}[$i] =~ m/{ y=<(.*)> }/){
-      #my $res = $1;
-      #TODO: deal with the general case
-      #$res =~ s/localhost/192.168.56.101/;
       ${$result}[$i] = $1;
       print ${$result}[$i] . "\n";
     }

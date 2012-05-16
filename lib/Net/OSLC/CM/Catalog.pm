@@ -107,8 +107,6 @@ sub query_providers {
     if ( ${$arrayref}[$i] =~ m/{ url=<(.*)> }/){
       my $provider = $1;
       if ($provider =~ m/http:\/\/(.*)/ and $provider !~ m/$self->url/){
-        #TODO: deal with the general case
-        #$provider =~ s/localhost/192.168.56.101/;
         push($self->providers_url,$provider);
       }
     }

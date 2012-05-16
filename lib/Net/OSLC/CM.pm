@@ -252,8 +252,6 @@ sub _get_ticket {
     if ( ${$result}[$i] =~ m/{ url=<(.*)> }/){
       my $res = $1;
       if ($res =~ m/http:\/\/(.*)/){
-        #TODO: deal with the general case
-        #$res =~ s/localhost/192.168.56.101/;
         my $ticket = Net::OSLC::CM::Ticket->new(url => $res);
         push(@{$self->tickets}, $ticket);
       }
@@ -267,7 +265,6 @@ sub load_tickets {
   
   for ( $i=1 ; $i < @{$self->tickets} ; $i++) {
     my $ticket = ${$self->tickets}[$i];
-    print $ticket->url . "\n";
     my $body = $ticket->get_ticket($self->connection);
     
     if (defined($body)){
