@@ -46,9 +46,9 @@ sub load {
   $rdf->include_model($self->model);
   
   # XXX
-  my $url = $self->url;
-  $url =~ s/192.168.56.101/localhost/;
-  $self->url($url);
+  #my $url = $self->url;
+  #$url =~ s/192.168.56.101/localhost/;
+  #$self->url($url);
   
   my $obj = $rdf->get_object($self->url);
 

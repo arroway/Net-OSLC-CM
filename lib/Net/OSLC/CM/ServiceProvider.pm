@@ -112,10 +112,10 @@ sub query_resource {
   my $i = 0;
   for ( $i=0; $i < @{$result}; $i++){
     if ( ${$result}[$i] =~ m/{ y=<(.*)> }/){
-      my $res = $1;
+      #my $res = $1;
       #TODO: deal with the general case
-      $res =~ s/localhost/192.168.56.101/;
-      ${$result}[$i] = $res;
+      #$res =~ s/localhost/192.168.56.101/;
+      ${$result}[$i] = $1;
       print ${$result}[$i] . "\n";
     }
   }
