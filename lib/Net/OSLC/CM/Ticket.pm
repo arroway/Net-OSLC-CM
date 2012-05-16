@@ -19,8 +19,12 @@ has modified => (isa => 'DateTime', is => 'rw');
 has status => (isa => 'Str', is => 'rw');
 has subject => (isa => 'Str', is => 'rw');
 has title => (isa => 'Str', is => 'rw');
-#has bugz_product => (isa => 'Str', is => 'rw');
-#has bugz_component => (isa => 'Str', is => 'rw');
+
+#Specific to Bugzilla database
+has bugz_component => (isa => 'Str', is => 'rw');
+has bugz_opsys => (isa => 'Str', is => 'rw');
+has bugz_product => (isa => 'Str', is => 'rw');
+has bugz_version => (isa => 'Str', is => 'rw');
 
 #search and update a ticket
 sub load {
@@ -34,6 +38,7 @@ sub load {
       foaf => 'http://xmlns.com/foaf/0.1/',
       oslc => 'http://open-services.net/ns/core#',
       oslccm => 'ttp://open-services.net/ns/cm#',
+      bugz => 'http://www.bugzilla.org/rdf#',
       '#default' => "http://xmlns.com/foaf/0.1/"
     },
   );
@@ -99,10 +104,28 @@ sub load {
     print "title: " . $self->title . "\n";
   }
   
+  #Specific to Bugzilla
+  if (defined($obj->bugz_component)){
+    $self->bugz_component($obj->bugz_component);
+    print "component: " . $self->bugz_component . "\n";
+  }
 
+  if (defined($obj->bugz_opsys)){
+    $self->bugz_opsys($obj->bugz_opsys);
+    print "opsys: " . $self->bugz_opsys . "\n";
+  }
+  
+  if (defined($obj->bugz_product)){
+    $self->bugz_product($obj->bugz_product);
+    print "product: " . $self->bugz_product . "\n";
+  }
+  
+  if (defined($obj->bugz_version)){
+    $self->bugz_version($obj->bugz_version);
+    print "version: " . $self->bugz_version . "\n";
+  }
 
 }
-
 
 sub get_ticket {
   my $self = shift;
