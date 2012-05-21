@@ -38,26 +38,28 @@ it under the same terms as Perl itself, either Perl version 5.12.3 or,
 at your option, any later version of Perl 5 you may have available.
 
 
+=======================================================================================================
+
 Net::OSLC::CM(3)      User Contributed Perl Documentation     Net::OSLC::CM(3)
 
 
 
-NNAAMMEE
+NAME
        Net::OSLC::CM − module to help implement a OSLC client for Change
        Management
 
-VVEERRSSIIOONN
+VERSION
        This document describes Net::OSLC::CM version 0.01
 
-DDEESSCCRRIIPPTTIIOONN
-       Net::OSLC::CM provides a Perl interface to help implement OSLC‐CM
+DESCRIPTION       
+      Net::OSLC::CM provides a Perl interface to help implement OSLC‐CM
        Consumers according to OSLC specifications described at
        open−services.net.  In the current state, this module implements
        function to retrieve changeRequests from Service Providers and Service
        Providers Catalog.  It uses HTTP basic authentication to connect to the
        distant changeRequest database.
 
-       An example of use:
+       An example use:
 
          use Net::OSLC::CM;
 
@@ -112,7 +114,7 @@ DDEESSCCRRIIPPTTIIOONN
 
        ·   Net::OSLC::CM::Util
 
-MMEETTHHOODDSS
+METHODS
        "new ( $url, $username, $password )"
            Returns a new Net::OSLC::CM object to make a connection to the
            changeRequest database of given $url.  When the distant database
@@ -142,7 +144,7 @@ MMEETTHHOODDSS
            provided Net::OSLC::CM::ServiceProvider object: queryCapability,
            resourceShape and creationFactory.
 
-       _Q_u_e_r_y _C_a_p_a_b_i_l_i_t_y
+       * queryCapability:
 
        Enables clients to query across a collection of resources via HTTP GET
        or POST.  To perform an HTTP GET query, an OSLC client starts with the
@@ -150,7 +152,7 @@ MMEETTHHOODDSS
        Capability, and appends to it query parameters in a syntax supported by
        the service.
 
-       _R_e_s_o_u_r_c_e _S_h_a_p_e
+       * resourceShape
 
        In some cases, to create resources and to query those that already
        exist within an OSLC Service, OSLC clients needs a way to learn which
@@ -161,7 +163,7 @@ MMEETTHHOODDSS
        Resource Shapes are intended to provide simple "hints" to clients at
        resource creation, update or query time.
 
-       _C_r_e_a_t_i_o_n _F_a_c_t_o_r_y
+       * creationFactory
 
        Enables clients to create new resources via HTTP POST.
 
@@ -179,20 +181,8 @@ MMEETTHHOODDSS
            Net:OSLC::CM::ChangeRequest class. See Net::OSLC::CM::ChangeRequest
            documentation for more information.
 
-BBUUGGSS
+BUGS
        Please report any bugs or feature requests to
        "stephanie.ouillon@telecom−sudparis.eu"
-
-AAUUTTHHOORR
-       Stephanie Ouillon
-
-ccooppyyrriigghhtt
-       Copyright (C) 2012 by Stephanie Ouillon
-
-       This library is free software; you can redistribute it and/or modify it
-       under the same terms as Perl itself, either Perl version 5.12.3 or, at
-       your option, any later version of Perl 5 you may have available.
-
-
 
 perl v5.14.2                      2012‐05‐21                  Net::OSLC::CM(3)
