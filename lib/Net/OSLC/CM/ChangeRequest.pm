@@ -1,4 +1,4 @@
-package Net::OSLC::CM::Ticket;
+package Net::OSLC::CM::ChangeRequest;
 use Any::Moose;
 
 use Net::OSLC::CM::Connection;
@@ -9,11 +9,11 @@ use Net::OSLC::CM::Util;
 
 =head1 NAME
 
-Net::OSLC::CM::Ticket - a class for a OSLC-CM Change Request (or ticket)
+Net::OSLC::CM::ChangeRequest - a class for a OSLC-CM Change Request
 
 =head1 VERSION
 
-This document describes Net::OSLC::CM::Ticket version 0.01
+This document describes Net::OSLC::CM::Request version 0.01
 
 =head1 DESCRIPTION
 
@@ -151,14 +151,14 @@ sub load {
 
 }
 
-=item C<< get_ticket ( $connection ) >>
+=item C<< get_changeRequest ( $connection ) >>
 
 Gets the Change request RDF/XML data of the object URL attribute and returns it as a string.
 $connection is a Net::OSLC::CM::Connection object.
 
 =cut
 
-sub get_ticket {
+sub get_changeRequest {
   my $self = shift;
   my $connection = shift;
 
@@ -181,14 +181,14 @@ sub get_ticket {
    }
 }
 
-=item C<< parse_ticket ($parser, $xml_data) >>
+=item C<< parse_changeRequest ($parser, $xml_data) >>
 
 Parses the XML data and returns the associated RDF model.
 $parser is a Net::OSLC::CM::Parser object and $xml_data is a string.
 
 =cut
 
-sub parse_ticket {
+sub parse_changeRequest {
   my $self = shift;
   my ($parser, $body) = @_ ;
 

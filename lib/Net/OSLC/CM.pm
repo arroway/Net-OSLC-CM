@@ -5,7 +5,7 @@ use Net::OSLC::CM::Catalog;
 use Net::OSLC::CM::Connection;
 use Net::OSLC::CM::Parser;
 use Net::OSLC::CM::ServiceProvider;
-use Net::OSLC::CM::Ticket;
+use Net::OSLC::CM::ChangeRequest;
 use RDF::Trine;
 use RDF::Query;
 use HTTP::MessageParser;
@@ -23,8 +23,8 @@ This document describes Net::OSLC::CM version 0.01
 =head1 DESCRIPTION
   
 Net::OSLC::CM provides a Perl interface to help implement OSLC-CM Consumers according to OSLC specifications described at open-services.net.
-In the current state, this module implements function to retrieve tickets from Service Providers and Service Providers Catalog.
-It uses HTTP basic authentication to connect to the distant ticket database.
+In the current state, this module implements function to retrieve changeRequests from Service Providers and Service Providers Catalog.
+It uses HTTP basic authentication to connect to the distant changeRequest database.
 
 An example of use:
 
@@ -36,7 +36,7 @@ An example of use:
                   password => $password 
   ));
 
-  # Getting an array of tickets from the ticket database (array of Net::OSLC::CM::Ticket objects)
+  # Getting an array of changeRequests from the changeRequest database (array of Net::OSLC::CM::ChangeRequest objects)
   my @results = $oslccm->get_oslc_resources;
 
 get_oslc_resources is a wrap function that calls successively the following:
@@ -57,14 +57,14 @@ get_oslc_resources is a wrap function that calls successively the following:
   # Retrieves URLs of the Service Providers given by the Catalog
   $oslccm->get_service_providers;
              
-  # Gets tickets URLs from each Service Provider, creates a Net::OSLC::CM::Ticket object and 
-  # pushes it into the $oslccm->tickets array
-  $oslccm->get_tickets($oslccm->providers);
+  # Gets changeRequests URLs from each Service Provider, creates a Net::OSLC::CM::ChangeRequest object and 
+  # pushes it into the $oslccm->changeRequests array
+  $oslccm->get_changeRequests($oslccm->providers);
 
-  # Gets data for each ticket
-  $oslccm->load_tickets();
+  # Gets data for each changeRequest
+  $oslccm->load_changeRequests();
 
-  my @results = $oslccm->tickets;
+  my @results = $oslccm->changeRequests;
 
 
 Net::OSLC::CM relies on:
@@ -79,7 +79,7 @@ Net::OSLC::CM relies on:
 
 =item * Net::OSLC::CM::ServiceProvider
 
-=item * Net::OSLC::CM::Ticket
+=item * Net::OSLC::CM::ChangeRequest
 
 =item * Net::OSLC::CM::Util
 
@@ -108,7 +108,7 @@ has providers => (
   default => sub {[]}
 );
 
-has tickets => (
+has changeRequests => (
   isa => 'ArrayRef',
   is => 'rw',
   default => sub {[]} 
@@ -138,14 +138,14 @@ sub BUILDARGS {
 
 =item C<< new ( $url, $username, $password ) >>
 
-Returns a new Net::OSLC::CM object to make a connection to the ticket database of given $url.
+Returns a new Net::OSLC::CM object to make a connection to the changeRequest database of given $url.
 When the distant database requires HTTP basic authentication, you provide a username and a password at the creation.
 
 =cut
 
 =item C<< get_oslc_resources >>
 
-Returns an array of Net::OSLC::CM::Ticket objects.
+Returns an array of Net::OSLC::CM::ChangeRequest objects.
 
 =cut 
 
@@ -161,9 +161,9 @@ sub get_oslc_resources {
   $self->get_provider_catalog_resource;
   $self->get_service_providers;
   
-  $self->get_tickets($self->providers);
-  $self->load_tickets();
-  return $self->tickets;
+  $self->get_changeRequests($self->providers);
+  $self->load_changeRequests();
+  return $self->changeRequests;
 }
 
 =item C<< get_provider_catalog_resource >>
@@ -301,13 +301,13 @@ sub _get_service_provider {
 
 =over
 
-=item C<< get_tickets >>
+=item C<< get_changeRequests >>
   
-  Wrapping function to get every ticket from every Service Provider enlisted and its attributes.
+  Wrapping function to get every changeRequest from every Service Provider enlisted and its attributes.
 
 =cut
 
-sub get_tickets {
+sub get_changeRequests {
   my $self = shift;
   
   my $i; 
@@ -318,19 +318,19 @@ sub get_tickets {
 
     if (defined($body)){
       my $model = $provider->parse_service_provider($self->parser, $body);
-      $self->_get_ticket($model);
+      $self->_get_changeRequest($model);
     }
   }
 }
 
-=item C<< _get_ticket ( $model ) >>
+=item C<< _get_changeRequest ( $model ) >>
 
-Populates an array of Net::OSLC::CM::Ticket objects. Takes in argument a RDF::Trine::Model object with the RDF model
+Populates an array of Net::OSLC::CM::ChangeRequest objects. Takes in argument a RDF::Trine::Model object with the RDF model
 that was parsed from the RDF data.
 
 =cut
 
-sub _get_ticket {
+sub _get_changeRequest {
   my $self = shift;
   my $model = shift;
   
@@ -352,31 +352,31 @@ sub _get_ticket {
     if ( ${$result}[$i] =~ m/{ url=<(.*)> }/){
       my $res = $1;
       if ($res =~ m/http:\/\/(.*)/){
-        my $ticket = Net::OSLC::CM::Ticket->new(url => $res);
-        push(@{$self->tickets}, $ticket);
+        my $changeRequest = Net::OSLC::CM::ChangeRequest->new(url => $res);
+        push(@{$self->changeRequests}, $changeRequest);
       }
     }
   }
 }
 
-=item C<< load_tickets >>
+=item C<< load_changeRequests >>
 
-Loads the attributes (id, title, creator, description...) of the tickets by calling the load() method of
-the Net:OSLC::CM::Ticket class. See Net::OSLC::CM:Ticket documentation for more information.
+Loads the attributes (id, title, creator, description...) of the changeRequests by calling the load() method of
+the Net:OSLC::CM::ChangeRequest class. See Net::OSLC::CM::ChangeRequest documentation for more information.
 
 =cut
 
-sub load_tickets {
+sub load_changeRequests {
   my $self = shift;
   my $i; 
   
-  for ( $i=1 ; $i < @{$self->tickets} ; $i++) {
-    my $ticket = ${$self->tickets}[$i];
-    my $body = $ticket->get_ticket($self->connection);
+  for ( $i=1 ; $i < @{$self->changeRequests} ; $i++) {
+    my $changeRequest = ${$self->changeRequests}[$i];
+    my $body = $changeRequest->get_changeRequest($self->connection);
     
     if (defined($body)){
-      my $model = $ticket->parse_ticket($self->parser, $body);
-      $ticket->load();
+      my $model = $changeRequest->parse_changeRequest($self->parser, $body);
+      $changeRequest->load();
     }
   }
 }
