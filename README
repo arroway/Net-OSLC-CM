@@ -12,6 +12,12 @@ To install this module type the following:
    make test (optional)
    make install
 
+DOCUMENTATION
+
+To generate perl documentation type the following:
+
+   perldoc name_of_module
+
 DEPENDENCIES
 
 	- HTTP::MessageParser
