@@ -16,6 +16,75 @@ our $VERSION = '0.01';
 
 Net::OSLC::CM - module to help implement a OSLC client for Change Management
 
+=head1 VERSION
+
+This document describes Net::OSLC::CM version 0.01
+
+=head1 DESCRIPTION
+  
+Net::OSLC::CM provides a Perl interface to help implement OSLC-CM Consumers according to OSLC specifications described at open-services.net.
+In the current state, this module implements function to retrieve tickets from Service Providers and Service Providers Catalog.
+It uses HTTP basic authentication to connect to the distant ticket database.
+
+An example of use:
+
+  use Net::OSLC::CM;   
+
+  my $oslccm = Net::OSLC::CM->new(
+                  url      => $self->remote_url,
+                  username => $username,
+                  password => $password 
+  ));
+
+  # Getting an array of tickets from the ticket database (array of Net::OSLC::CM::Ticket objects)
+  my @results = $oslccm->get_oslc_resources;
+
+get_oslc_resources is a wrap function that calls successively the following:
+
+  $oslccm->url = "http://example.com";
+  
+  # RDF data parser
+  $oslccm->parser( 
+    Net::OSLC::CM::Parser->new(cm => $oslccm) 
+  );
+  
+  # Assumes it'll get a Service Providers Catalog
+  $oslccm->create_catalog;
+             
+  # Gets the catalog (assuming it does exists to get the Service Providers information)
+  $oslccm->get_provider_catalog_resource;
+ 
+  # Retrieves URLs of the Service Providers given by the Catalog
+  $oslccm->get_service_providers;
+             
+  # Gets tickets URLs from each Service Provider, creates a Net::OSLC::CM::Ticket object and 
+  # pushes it into the $oslccm->tickets array
+  $oslccm->get_tickets($oslccm->providers);
+
+  # Gets data for each ticket
+  $oslccm->load_tickets();
+
+  my @results = $oslccm->tickets;
+
+
+Net::OSLC::CM relies on:
+
+=over 4                      
+
+=item * Net::OSLC::CM::Connection
+
+=item * Net::OSLC::CM::Parser
+
+=item * Net::OSLC::CM::Catalog
+
+=item * Net::OSLC::CM::ServiceProvider
+
+=item * Net::OSLC::CM::Ticket
+
+=item * Net::OSLC::CM::Util
+
+=back
+
 =cut
 
 has url => (
@@ -63,15 +132,22 @@ sub BUILDARGS {
   return $self->SUPER::BUILDARGS(%args);
 }
 
-=head2 get_oslc_resources
+=head1 METHODS
 
-OSLC CM service providers must provide a Service Provider Resource, 
-and *MAY* provide a Service Provider Catalog Resource.
-Gets an OSLC Service Provider Catalog Document from a Service Provider 
-Catalog Resource (via GET method) and Service Providers resources.
-An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
+=over 4
+
+=item C<< new ( $url, $username, $password ) >>
+
+Returns a new Net::OSLC::CM object to make a connection to the ticket database of given $url.
+When the distant database requires HTTP basic authentication, you provide a username and a password at the creation.
 
 =cut
+
+=item C<< get_oslc_resources >>
+
+Returns an array of Net::OSLC::CM::Ticket objects.
+
+=cut 
 
 sub get_oslc_resources {
   my $self = shift;
@@ -90,9 +166,12 @@ sub get_oslc_resources {
   return $self->tickets;
 }
 
-=head2 get_provider_catalog_resource
+=item C<< get_provider_catalog_resource >>
 
-Gets if it exists the Service Provider Catalog and performs a query to get the referenced Service Providers .
+Gets if it exists the Service Provider Catalog as a Net::OSLC::CM::Catalog object and performs a query to get 
+the referenced Service Providers .
+An OSLC Service Provider Catalog Document describes a catalog whose entries describe service providers or out-of-line subcatalogs.
+OSLC CM service providers must provide a Service Provider Resource and *MAY* provide a Service Provider Catalog Resource.
 
 =cut
  
@@ -108,7 +187,7 @@ sub get_provider_catalog_resource {
   }
 }
 
-=head2 create_catalog
+=item C<< create_catalog >>
 
 Creates an instance of the Net::OSLC::CM:Catalog class.
 
@@ -132,13 +211,39 @@ sub create_catalog {
   );
 }
 
-=head2 get_service_providers
+=item C<< get_service_providers >>
 
-For a given Catalog, gets Service Providers resources and properties: 
+Populates an array of Service Providers objects.
+
+=cut
+
+sub get_service_providers {
+  my $self =shift;
+
+  my $i = 0;
+  for( $i=0; $i < @{$self->catalog->providers_url}; $i++){
+
+    my $url = ${$self->catalog->providers_url}[$i];
+    if (defined($url)){
+      my $provider = Net::OSLC::CM::ServiceProvider->new(
+                      cm => $self,
+                      url => $url);
+      
+      $self->_get_service_provider($provider);
+    
+      push(@{$self->providers}, $provider);                         
+    }
+  }
+}
+
+=item C<< _get_service_providers ( $provider ) >>
+
+For a given Catalog, gets the resources and properties for the provided Net::OSLC::CM::ServiceProvider object: 
 queryCapability, resourceShape and creationFactory.
 
-Returns a list of Service Providers objects.
-=cut
+=cut 
+
+=back
 
 =head3 Query Capability
 
@@ -168,26 +273,6 @@ Enables clients to create new resources via HTTP POST.
 
 =cut
 
-
-sub get_service_providers {
-  my $self =shift;
-
-  my $i = 0;
-  for( $i=0; $i < @{$self->catalog->providers_url}; $i++){
-
-    my $url = ${$self->catalog->providers_url}[$i];
-    if (defined($url)){
-      my $provider = Net::OSLC::CM::ServiceProvider->new(
-                      cm => $self,
-                      url => $url);
-      
-      $self->_get_service_provider($provider);
-    
-      push(@{$self->providers}, $provider);                         
-    }
-  }
-}
-
 sub _get_service_provider {
   
   my $self = shift;
@@ -214,6 +299,14 @@ sub _get_service_provider {
  }
 }
 
+=over
+
+=item C<< get_tickets >>
+  
+  Wrapping function to get every ticket from every Service Provider enlisted and its attributes.
+
+=cut
+
 sub get_tickets {
   my $self = shift;
   
@@ -229,6 +322,13 @@ sub get_tickets {
     }
   }
 }
+
+=item C<< _get_ticket ( $model ) >>
+
+Populates an array of Net::OSLC::CM::Ticket objects. Takes in argument a RDF::Trine::Model object with the RDF model
+that was parsed from the RDF data.
+
+=cut
 
 sub _get_ticket {
   my $self = shift;
@@ -259,6 +359,13 @@ sub _get_ticket {
   }
 }
 
+=item C<< load_tickets >>
+
+Loads the attributes (id, title, creator, description...) of the tickets by calling the load() method of
+the Net:OSLC::CM::Ticket class. See Net::OSLC::CM:Ticket documentation for more information.
+
+=cut
+
 sub load_tickets {
   my $self = shift;
   my $i; 
@@ -277,3 +384,23 @@ sub load_tickets {
 1;
 
 __END__
+
+=back
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<< stephanie.ouillon@telecom-sudparis.eu >>
+
+=head1 AUTHOR
+
+Stephanie Ouillon
+
+=head1 copyright
+
+Copyright (C) 2012 by Stephanie Ouillon
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.12.3 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut

@@ -6,15 +6,32 @@ use HTTP::MessageParser;
 
 =head1 NAME
 
-Net::OSLC::CM::Connection
+Net::OSLC::CM::Connection - Class for the connection to a distant ticket database (Service Provider)
+
+=head1 VERSION 
+
+This document describes Net::OSLC::CM::Connection version 0.01
 
 =head1 DESCRIPTION
 
-Connects to a server with the given URL.
-Will probably deal with authentication later on.
+Connects to a server with the given URL using HTTP basic authentication.
+
+  use Net::OSLC::CM::Connection;
+
+  #URL of the distant tickets database (OSLC-CM Service Provider)
+  my $url = "http://example.com"
+  
+  # HTTP basic auth credentials
+  my $username = "toto";
+  my $password = "pwd";
+
+  my $connection = Net::OSLC::CM::Connection->new(
+       url      => $url,
+       username => $username,
+       password => $password
+ );
 
 =cut
-
 
 has url => (
   isa => 'Str',
@@ -45,6 +62,16 @@ has connection => (
   }
 );
 
+=head1 METHODS
+
+=over 
+
+=item C<< get_http_body ( $http_response ) >>
+
+Returns the body part of a HTTP GET response.
+$http_response is a string.
+
+=cut
 
 sub get_http_body {
   my $self = shift;
@@ -59,3 +86,5 @@ sub get_http_body {
 }
 
 1;
+
+=back

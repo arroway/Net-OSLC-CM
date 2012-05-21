@@ -4,17 +4,17 @@ use Any::Moose;
 
 =head1 NAME
 
-Net::OSLC::CM::Catalog - Service Provider Catalog Ressource
+Net::OSLC::CM::Catalog - OSLC-CM Service Provider Catalog Ressource class
+
+=head1 VERSION
+
+This document describes Net::OSLC::CM::Catalog version 0.01
 
 =head1 DESCRIPTION
 
-The Catalog enables OSLC clients to find Service Providers offered. 
+The Catalog enables OSLC-CM clients to find Service Providers offered. 
 These catalogs may contain other nested catalogs as well as 
 service providers.
-
-=head1 TODO
-This current implementation assumes such a Catalog exists, and that it 
-references Service Providers only (not other catalogs).
 
 =cut
 
@@ -33,14 +33,16 @@ has providers_url => (
   is => 'rw',
   default => sub { [] },
 );
- 
 
-=head2 get_catalog connection
+=head1 METHODS
 
-Perfoms a GET HTTP request to get xml data from the Service Provider Catalog
-of an OSLC service.
-At the moment, I assume that document actually exists (according to OSLC-CM
-specifications, this may not be always the case)
+=over
+
+=item C<< get_catalog connection ( $connection ) >>
+
+Returns HTTP body as a string.
+It perfoms a GET HTTP request to get XML data from the Service Provider Catalog
+of an OSLC service. It takes in argument a Net::OSLC::CM::Connection object.
 
 =cut
 
@@ -67,12 +69,11 @@ sub get_catalog {
     return;
   }
 }
-=head2 parse_catalog parser xml_data
 
-Parses xml data that we got when we request the Service Provider
-Catalog ressource.
-Parsing the data into a RDF model, we'll retrieve the URIs of every Service
-Provider that is referenced. 
+=item C<< parse_catalog ( $parser, $xml_data ) >>
+
+Returns the RDF model as a RDF::Trine::Model object corresponding with the provided RDF/XML data.
+It takes in arguments a Net::OSLC::CM::Parser (built on a RDF::Trine::Parser class) and a stringof RDF/XML data.
 
 =cut
 
@@ -85,11 +86,13 @@ sub parse_catalog {
   return $model;
 }
 
-=head2 query_providers parser rdf_model
+=item C<< query_providers ( $parser, $rdf_model) >>
 
-Performs a SPARQL query to get the URIs of every Service Provider that 
+Populates an array of Service Providers URLs.
+It performs a SPARQL query to get the URIs of every Service Provider that 
 is referenced in the Service Providers Catalog.
-We store the result in $self->providers. 
+It takes in argument a Net::OSLC::CM::Parser and a the RDF::Trine::Model corresponding to the RDF/XML data
+we want to explore.
 
 =cut
 
@@ -117,3 +120,5 @@ sub query_providers {
 }
 
 1;
+
+=back

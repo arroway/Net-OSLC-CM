@@ -7,6 +7,21 @@ use Net::OSLC::CM::ServiceProvider;
 use RDF::Helper;
 use Net::OSLC::CM::Util;
 
+=head1 NAME
+
+Net::OSLC::CM::Ticket - a class for a OSLC-CM Change Request (or ticket)
+
+=head1 VERSION
+
+This document describes Net::OSLC::CM::Ticket version 0.01
+
+=head1 DESCRIPTION
+
+A class for OSLC-CM Change Request that provides common OSLC attributes, and some additional attributes specific to Bugzilla.
+
+=cut
+
+
 has model => (isa => 'RDF::Trine::Model', is => 'rw');
 
 has url =>(isa => 'Str', is => 'rw');
@@ -26,7 +41,16 @@ has bugz_opsys => (isa => 'Str', is => 'rw');
 has bugz_product => (isa => 'Str', is => 'rw');
 has bugz_version => (isa => 'Str', is => 'rw');
 
-#search and update a ticket
+=head1 METHODS
+
+=over
+
+=item C<< load >>
+
+Loads every know attributes of the Change Request.
+
+=cut
+
 sub load {
   my $self = shift;
 
@@ -127,6 +151,13 @@ sub load {
 
 }
 
+=item C<< get_ticket ( $connection ) >>
+
+Gets the Change request RDF/XML data of the object URL attribute and returns it as a string.
+$connection is a Net::OSLC::CM::Connection object.
+
+=cut
+
 sub get_ticket {
   my $self = shift;
   my $connection = shift;
@@ -150,6 +181,13 @@ sub get_ticket {
    }
 }
 
+=item C<< parse_ticket ($parser, $xml_data) >>
+
+Parses the XML data and returns the associated RDF model.
+$parser is a Net::OSLC::CM::Parser object and $xml_data is a string.
+
+=cut
+
 sub parse_ticket {
   my $self = shift;
   my ($parser, $body) = @_ ;
@@ -160,3 +198,5 @@ sub parse_ticket {
 }
 
 1;
+
+=back

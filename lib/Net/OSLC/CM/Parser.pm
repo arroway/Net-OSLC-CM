@@ -8,10 +8,14 @@ use RDF::Query;
 
 Net::OSLC::CM::Parser - RDF Parser
 
+=head1 VERSION
+
+This document describes Net::OSLC::CM::Parser version 0.01
+
 =head1 DESCRIPTION
 
-Utility for parsing xml ressources into a RDF model and 
-performing SPARQL queries in a given model.
+Utility for parsing RDF/XML ressources into a RDF model and 
+performing SPARQL queries in the given model.
 
 =cut
 
@@ -20,11 +24,16 @@ has cm => (
   is => 'rw'
 );
 
-=head2 parse_xml_ressources base_uri rdfxml_data
+=head1 METHODS
 
-The argument rdfxml data is the body of the performed GET HTTP request.
+=over
+
+=item C<< parse_xml_ressources ( $base_uri, $rdfxml_data ) >>
+
+Returns a RDF::Trine::Model object.
+The argument $rdfxml_data is a string (RDF/XML data) we got as the body of the HTTP GET request we performed.
 Through the regex, we retrive only the XML data we're interested in, 
-and we parse it intod a RDF model located in memory.
+and we parse it into a RDF model located in memory.
 
 =cut
 
@@ -43,9 +52,9 @@ sub parse_xml_ressources {
   return $model;
 } 
 
-=head2 query_rdf model rdf_query result_storage
+=item C<< query_rdf model ( $rdf_query, $result_storage ) >>
 
-Executes a given SPARQL query and store the result in the given argument.
+Performs the given SPARQL $rdf_query and stores the result in $result_storage which is an array reference.
 
 =cut
 
@@ -70,3 +79,5 @@ sub query_rdf {
 }
 
 1;
+
+=back

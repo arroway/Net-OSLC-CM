@@ -4,9 +4,16 @@ use Any::Moose;
 
 =head1 NAME
 
-Net::OSLC::CM::ServiceProvider
+Net::OSLC::CM::ServiceProvider - OSLC-CM Service Provider class
+
+=head1 VERSION
+
+This document describes Net::OSLC::CM::ServiceProvider version 0.01
 
 =head1 DESCRIPTION
+
+(from open-services.net)
+Service Provider: an implementation of the OSLC Change Management specifications as a server. OSLC CM clients consume these services.
 
 =cut
 
@@ -44,9 +51,16 @@ has creationFactory => (
   default => sub { [] },
 );
 
-=head2 get_service_provider connection
+=head1 METHODS
 
-Performs a GET HTTP request to get xml data for a given Service Provider.
+=over
+
+=item C<< get_service_provider ( $connection, $url ) >>
+
+Performs a GET HTTP request to get XML data for a given Service Provider.
+Returns the body of the HTTP response as a string.
+
+It takes a Net::OSLC::CM::Connection object $connection and the URL of the targeted Service Provider as arguments.
 
 =cut
 
@@ -72,11 +86,9 @@ sub get_data {
    }
 }
 
-=head2 parse_service_provider parser rdf_data
+=item C<< parse_service_provider ( $parser, $rdf_data) >>
 
-Parses xml data that we got from HTTP request for a given Service Provider.
-Parsing the data into a RDF model, we'll retrieve the information we need to perform queries
-and change requests. 
+Parses RDF/XML data that we got from the HTTP request for a given Service Provider and returns the RDF model.
 
 =cut
 
@@ -88,7 +100,7 @@ sub parse_service_provider {
   return $model; 
 }
 
-=head2 query_resource
+=item C<< query_resource >>
 
 Performs a query in an OSLC service to find properties such as
 queryCapability or resourceShape. 
@@ -117,3 +129,5 @@ sub query_resource {
 }
 
 1;
+
+=back

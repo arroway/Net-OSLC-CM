@@ -2,9 +2,26 @@ package Net::OSLC::CM::Util;
 
 use DateTime;
 
-=head2 XSDToDateTime datetime
-Converts a date/time at the XSD format (XML date format) into a DateTime format.
+=head1 NAME
+
+Net::OSLC::CM::Util - Utility module
+
+=head1 VERSION
+This document describes Net::OSLC::CM::Util version 0.01
+
+=head1 DESCRIPTION
+
+Provides utility functions when necessary
+
+=head1 FUNCTIONS
+
+=over
+
+=item C<< XSDToDateTime ( $datetime ) >>
+
 Returns a DateTime object.
+Converts a date/time at the XSD format (XML date format) into a DateTime format.
+
 =cut
 
 sub XSDToDateTime {
@@ -46,3 +63,5 @@ sub XSDToDateTime {
 }
 
 1;
+
+=back
