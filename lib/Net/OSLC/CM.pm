@@ -351,7 +351,7 @@ sub _get_changeRequest {
   for ( $i=0; $i < @{$result}; $i++){
     if ( ${$result}[$i] =~ m/{ url=<(.*)> }/){
       my $res = $1;
-      if ($res =~ m/http:\/\/(.*)/){
+      if ($res =~ m/http:\/\/(.*)\/changerequest\?id\=(.*)/){
         my $changeRequest = Net::OSLC::CM::ChangeRequest->new(url => $res);
         push(@{$self->changeRequests}, $changeRequest);
       }
@@ -370,7 +370,7 @@ sub load_changeRequests {
   my $self = shift;
   my $i; 
   
-  for ( $i=1 ; $i < @{$self->changeRequests} ; $i++) {
+  for ( $i=0 ; $i < @{$self->changeRequests} ; $i++) {
     my $changeRequest = ${$self->changeRequests}[$i];
     my $body = $changeRequest->get_changeRequest($self->connection);
     
