@@ -42,13 +42,13 @@ has url => (
 has username => (
   isa => 'Str',
   is => 'ro',
-  required => 1
+#  required => 1
 );
 
 has password => (
   isa => 'Str',
   is => 'ro',
-  required => 1
+#  required => 1
 );
 
 has connection => (
