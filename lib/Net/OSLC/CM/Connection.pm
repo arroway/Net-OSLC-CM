@@ -69,7 +69,7 @@ has connection => (
 =item C<< get_http_body ( $http_response ) >>
 
 Returns the body part of a HTTP GET response.
-$http_response is a string.
+$http_response is a HTTP::Response object.
 
 =cut
 
