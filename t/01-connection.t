@@ -38,6 +38,27 @@ is($connection->username, $username,          'registered username \'' . $connec
 ok(defined $connection->password,             'password $connection->password is defined');
 is($connection->password, $password,          'registered password \'' . $connection->password . '\' is correct');
 
+my $cm = Net::OSLC::CM->new( 
+  url => $test_url,
+  username => $username,
+  password => $password 
+);
+
+#Checks the new created CM object is correct
+ok(defined $cm,                                   'Net::OSLC::CM new object is defined');
+ok($cm->isa('Net::OSLC::CM'),                     'and is the right class');
+
+#Checks the Connection attributes are correct
+ok(defined $cm->connection,                       'Net::OSLC::CM::Connection cm attribute is defined');
+ok($cm->connection->isa('Net::OSLC::CM::Connection'),'connection attribute is the right class');
+ok(defined $cm->connection->url,                  'connection url $cm->connection->url is defined');
+is($cm->connection->url, $test_url,               'registered url \'' . $cm->connection->url . '\' is correct');
+ok(defined $cm->connection->username,             'username $cm->connection->username is defined');
+is($cm->connection->username, $username,          'registered username \'' . $cm->connection->username . '\' is correct');
+ok(defined $cm->connection->password,             'password $cm->connection->password is defined');
+is($cm->connection->password, $password,          'registered password \'' . $cm->connection->password . '\' is correct');
+
+
 #Gets local data to test functions
 local $/=undef;
 open CATALOG, "data/catalog.html" or die "Couldn't open file: $!";
