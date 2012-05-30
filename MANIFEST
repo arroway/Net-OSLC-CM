@@ -2,7 +2,6 @@ Changes
 Makefile.PL
 MANIFEST
 README
-t/01-get-catalog.t
 lib/Net/OSLC/CM.pm
 lib/Net/OSLC/CM/Catalog.pm
 lib/Net/OSLC/CM/Connection.pm
@@ -10,3 +9,7 @@ lib/Net/OSLC/CM/Parser.pm
 lib/Net/OSLC/CM/ServiceProvider.pm
 lib/Net/OSLC/CM/ChangeRequest.pm
 lib/Net/OSLC/CM/Util.pm
+t/01-connection.t
+t/02-get-provider-catalog-resources.t
+t/data/catalog.html
+t/data/catalog.xml
