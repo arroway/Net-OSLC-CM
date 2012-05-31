@@ -61,7 +61,7 @@ sub load {
       rdf => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
       foaf => 'http://xmlns.com/foaf/0.1/',
       oslc => 'http://open-services.net/ns/core#',
-      oslccm => 'ttp://open-services.net/ns/cm#',
+      oslccm => 'http://open-services.net/ns/cm#',
       bugz => 'http://www.bugzilla.org/rdf#',
       '#default' => "http://xmlns.com/foaf/0.1/"
     },
