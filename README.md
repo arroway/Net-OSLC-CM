@@ -17,7 +17,7 @@ To install this module type the following:
 ~~~ sh
    perl Makefile.PL
    make
-   make test (optional, tests not complete)
+   make test
    make install
 ~~~ 
 
