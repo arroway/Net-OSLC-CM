@@ -11,5 +11,7 @@ lib/Net/OSLC/CM/ChangeRequest.pm
 lib/Net/OSLC/CM/Util.pm
 t/01-connection.t
 t/02-get-provider-catalog-resources.t
+t/03-get-service-providers.t
 t/data/catalog.html
 t/data/catalog.xml
+t/data/serviceprovider.xml
