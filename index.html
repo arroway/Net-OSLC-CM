@@ -2,96 +2,125 @@
 <!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
 <!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
-  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="javascripts/script.js"></script>
+    <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/script.js"></script>
 
-  <title>Net-oslc-cm</title>
-  <meta name="description" content="Perl module to interact with OSLC Service Providers ">
+    <title>Net-OSLC-CM</title>
+    <meta name="description" content="Perl module to help implement OSLC-CM Consumer adaptators ">
 
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 
-</head>
+  </head>
 
-<body>
+  <body>
 
-  <div class="wrapper">
-    <header>
-      <h1 class="title">Net-oslc-cm</h1>
-    </header>
-    <div id="container">
-      <p class="tagline">Perl module to interact with OSLC Service Providers </p>
-      <div id="main" role="main">
-        <div class="download-bar">
-        <div class="inner">
-          <a href="https://github.com/arroway/Net-OSLC-CM/tarball/master" class="download-button tar"><span>Download</span></a>
-          <a href="https://github.com/arroway/Net-OSLC-CM/zipball/master" class="download-button zip"><span>Download</span></a>
-          <a href="https://github.com/arroway/Net-OSLC-CM" class="code">View Net-oslc-cm on GitHub</a>
-        </div>
-        <span class="blc"></span><span class="trc"></span>
-        </div>
-        <article class="markdown-body">
+    <div class="wrapper">
+      <header>
+       <h1 class="title">Net-OSLC-CM</h1>
+      </header>
+      <div id="container">
+        <p class="tagline">Perl module to help implement OSLC-CM Consumer adaptators </p>
+        <div id="main" role="main">
+          <div class="download-bar">
+            <div class="inner">
+              <a href="https://github.com/arroway/Net-OSLC-CM/tarball/master" class="download-button tar"><span>Download</span></a>
+              <a href="https://github.com/arroway/Net-OSLC-CM/zipball/master" class="download-button zip"><span>Download</span></a>
+              <a href="https://github.com/arroway/Net-OSLC-CM" class="code">View Net-OSLC-CM on GitHub</a>
+            </div>
+            <span class="blc"></span><span class="trc"></span>
+          </div>
+          <article class="markdown-body">
           <h1>Net-OSLC-CM version 0.01</h1>
 
-<p>Net-OSLC-CM is a module to help implement a <a href="http://open-services.net">OSLC</a> client for Change Management,
-according to <a href="http://open-services.net/bin/view/Main/CmHome">OSLC-CM specifications v2</a> .</p>
+          <h4><a href="#about">About this project</a></h4>
+          <h4><a href="#beginOslc">Where to begin with OSLC-CM?</a></h4>
+          <h4><a href="#moduleOSLC">About the module Net-OSLC-CM</a></h4>
+            <ul>  
+              <li><h6><a href="#examples">Examples</a></h6></li>
+              <li><h6><a href="#notes">Some notes</a></h6></li>
+            </ul>  
+          <h4><a href="#installation">Installation guidelines</a></h4>
+          <h4><a href="#sd">Where to begin with SD ?</a></h4>
+          <h4><a href="#bugs">Report Bugs</a></h4>
 
-<h2>Installation</h2>
+          <h2 id="about">About this project</h2>
+          <p>Net-OSLC-CM is a module to help implement a <a href="http://open-services.net">OSLC</a> client (consumer) for Change Management,
+          according to <a href="http://open-services.net/bin/view/Main/CmHome">OSLC-CM specifications v2</a> .</p>
+          
+          <p>This module was built and tested using <a href="http://syncwith.us">Simple Defects</a> and the <a href="http://wiki.eclipse.org/Lyo/BuildBugzilla">OSLC-CM adaptator for Bugzilla</a>. 
+          I was working on a local network database and using HTTP basic auth. </p>
 
-<p>Dependencies:</p>
+          <h2 id="beginOslc">Where to begin with OSLC-CM?</h2>
 
-<ul>
-<li>HTTP::MessageParser</li>
-<li>RDF::Trine</li>
-<li>RDF::Query</li>
-</ul><p>To install this module type the following:</p>
+          <p>OSLC stands for Open Services for Lifecycle Collaboration. The first web site to visit concerning OSLC is <a href="open-services.net">open-services.net</a>.
+          This <a href="http://open-services.net/about/">video</a> is a good first entry point for new comers to help catch the goal of OSLC and understand
+          what is at stake. </p>
 
-<div class="highlight">
-<pre>   perl Makefile.PL
-   make
-   make <span class="nb">test</span>
-<span class="nb">   </span>make install
-</pre>
-</div>
+          <p>Plenty of videos and tutorial are available in the <a href="http://open-services.net/resources/">"Resources"</a> area to help starting working with OSLC. But the most important documents
+          are the <a href="http://open-services.net/specifications/">specifications</a>.
+          In this project, I had to focus on the Core and the Change Management (CM) specifications.</p>
 
+          <p>A service can be either a Service Provider (which plays the role of the "server") or a Consumer (playing the role of a "client").
+          In our case, Bugzilla is the Service Provider an SD the Consumer. The bug tickets are called "Change Request".</p>
 
-<h2>How to generate documentation</h2>
+          <p>The main ideas to keep in mind to start implementing a OSLC-CM Consumer are: 
+          <ul>
+            <li>you use the HTTP protocole, basically "GET" requests to pull data and "PUSH"/"POST" requests to push data.</li>
+            <li>you manipulate RDF/XML data at least (also JSON support can be implemented), so you'll need a RDF parser and serializer.</li>
+            <li>at best, you implement OAuth to protect your data transfers, at least basic auth.</li>
+          </ul></p>
 
-<p>To generate perl documentation type the following:</p>
+          <p>The next step is to read the specs. Or to read a bit of code if as for me it helps you better to understand how all of this works.</p>
 
-<div class="highlight">
-<pre>   <span class="nv">$ </span>perldoc name_of_module
-</pre>
-</div>
+          <p>The code of some OSLC-CM clients are available (in Java):
+          <ul>
+            <li><a href="http://grepcode.com/file/repository.grepcode.com/java/eclipse.org/3.6/org.eclipse.mylyn.oslc/core/3.4.0/org/eclipse/mylyn/internal/oslc/core/client/AbstractOslcClient.java?av=f">mylyn adaptator</a></li>
+            <li><a href="https://fusionforge.org/plugins/mediawiki/wiki/fusionforge/index.php/OSLC-CM_Plugin">FusionForge</a></li>
+          </ul> 
+          </p>
 
+          <h2 id="moduleOSLC">About the module Net-OSLC-CM</h2>
+         
+          <p>Net::OSLC::CM provides a Perl interface to help implement OSLC‐CM Consumers according to OSLC specifications described at
+        open−services.net. In the current state, this module implements function to retrieve changeRequests from Service Providers and Service
+        Providers Catalog.<br>
+        It uses HTTP basic authentication to connect to the distant changeRequest database.</p>
 
-<h2>IMPORTANT</h2>
+        <img src="images/oslc-core-providers.graffle__Canvas_1.jpg"/>
+        <center><p><font size="1">Service Providers concepts and relationships
+            - source: OSLC Core specification at <a href="open-services.net">open-services.net</a></font></p></center>
+        
+        <p>Net::OSLC::CM relies on:</p>
 
-<p>This module was built and tested using <a href="http://syncwith.us">Simple Defects</a> and the <a href="http://wiki.eclipse.org/Lyo/BuildBugzilla">OSLC-CM connector for Bugzilla</a>. 
-I am working on a localhost database and using HTTP basic auth. </p>
+        <ul>
+          <li>Net::OSLC::CM::Connection</li>
+          <li>Net::OSLC::CM::Parser</li>
+          <li>Net::OSLC::CM::Catalog</li>
+          <li>Net::OSLC::CM::ServiceProvider</li>
+          <li>Net::OSLC::CM::ChangeRequest</li>
+          <li>Net::OSLC::CM::Util</li>
+        </ul>
+        
+        Net-OSL-CM uses a few modules.
+          <p>
+          <ul>
+            <li>Moose</li>
+            <li>The classic LWP::UserAgent to establish a connection and perform HTTP requests.</li>
 
-<h2>About this module</h2>
+            <li>HTTP::MessageParser to parse HTTP answers</li>
 
-<p>Net::OSLC::CM provides a Perl interface to help implement OSLC‐CM Consumers according to OSLC specifications described at
-open−services.net. In the current state, this module implements function to retrieve changeRequests from Service Providers and Service
-Providers Catalog.<br>
-It uses HTTP basic authentication to connect to the distant changeRequest database.</p>
-
-<p>Net::OSLC::CM relies on:</p>
-
-<ul>
-<li>Net::OSLC::CM::Connection</li>
-<li>Net::OSLC::CM::Parser</li>
-<li>Net::OSLC::CM::Catalog</li>
-<li>Net::OSLC::CM::ServiceProvider</li>
-<li>Net::OSLC::CM::ChangeRequest</li>
-<li>Net::OSLC::CM::Util</li>
-</ul><h2>Examples</h2>
+            <li>RDF::Trine was chosen to deal with RDF data because it implements the tools we need to parse it, and later on, serialize it.
+            I use a model stored in RAM memory</li>
+          </ul>
+          </p>
+        
+        <h3 id="example">Examples</h3>
 
 <pre><code>use Net::OSLC::CM;
 
@@ -106,7 +135,7 @@ my $oslccm = Net::OSLC::CM−&gt;new(
 my @results = $oslccm−&gt;get_oslc_resources;
 </code></pre>
 
-<p>get_oslc_resources is a wrapping function that calls successively the following:</p>
+        <p>get_oslc_resources is a wrapping function that calls successively the following:</p>
 
 <pre><code>$oslccm−&gt;url = "http://example.com";
 
@@ -134,74 +163,108 @@ $oslccm−&gt;load_changeRequests();
 my @results = $oslccm−&gt;changeRequests;
 </code></pre>
 
-<h2>Methods you can call from Net::OSLC::CM</h2>
+        <h3 id="notes">Some notes</h3>
 
-<p><code>new ( $url, $username, $password )</code>
-  Returns a new Net::OSLC::CM object to make a connection to the changeRequest database of given $url. 
-  When the distant database requires HTTP basic authentication, you provide a username and a password at the creation.</p>
+          <p>We can search for data in two ways: 
+          <ul>
+            <li>with SPARQL queries and RDF::Query</li>
+            <li>with RDF::Helper - this modules allows to map every RDF property as a class attribute, which makes simple "parcours" easy.</li>
+          </ul></p> 
 
-<p><code>get_oslc_resources</code>
-  Returns an array of Net::OSLC::CM::ChangeRequest objects.</p>
+          <p>What can be improved : 
+          <ul>
+            <li>RDF/SPARQL queries</li>
+            <li>implementing OAuth : a Perl module has alredy been implemented that could be used</li>
+            <li>"push" side</li>
+          </ul></p>
 
-<p><code>get_provider_catalog_resource</code>
-  Gets if it exists the Service Provider Catalog as a Net::OSLC::CM::Catalog object and performs a query to get the
-  referenced Service Providers .  An OSLC Service Provider Catalog Document describes a catalog whose entries describe service
-  providers or out‐of‐line subcatalogs.  OSLC CM service providers must provide a Service Provider Resource and <em>MAY</em> provide a
-  Service Provider Catalog Resource.</p>
+          <h2 id="installation">Installation guidelines</h2>
 
-<p><code>create_catalog</code>
- Creates an instance of the Net::OSLC::CM:Catalog class.</p>
+          <h3>Bugzilla</h3>
+         
+          <p><a href="http://www.bugzilla.org/docs/4.2/en/html/installation.html">Bugzilla documentation</a> is very detailed to help install a Bugzilla server.
+          During the process, I only faced some problems with a few Perl module, but they are common problems that you can solve by searching around on the
+          web.</p>
 
-<p><code>get_service_providers</code>
- Populates an array of Service Providers objects.</p>
+          <h3>Bugzilla OSCL-CM adaptator</h3>
 
-<p><code>_get_service_providers ( $provider )</code>
- For a given Catalog, gets the resources and properties for the provided Net::OSLC::CM::ServiceProvider object: queryCapability,
- resourceShape and creationFactory.</p>
+          <p>A <a href="http://wiki.eclipse.org/Lyo/BuildBugzilla">detailed tutorial</a> is available with all necessary instruction.</p>
+          <p>You don't necessarily need to install your own Bugzilla database to make it run: you can start by playing with 
+          the <a href="http://landfill.bugzilla.org/">Bugzilla Test Server.</a></p>
 
-<p>(the following is quoted from the specifications on open-services.net)</p>
+          <p>Be careful with the <a href="http://open-services.net/resources/tutorials/integrating-products-with-oslc/">tutorial</a> references to some code
+          or adaptator, it is not up-to-date.</p>
+          <p>Also, make sure to upload the Bugzilla code from the <a href="http://git.eclipse.org/c/lyo/org.eclipse.lyo.server.git/">git repository of eclipse</a>, no <a href="http://oslc-tools.svn.sourceforge.net/">this</a>
+          old SVN repo.</p>
 
-<ul>
-<li>queryCapability: Enables clients to query across a collection of resources via HTTP GET or POST.  To perform an HTTP GET query, 
-an OSLC client starts with the base URI as defined by the oslc:queryBase property of a Query Capability, and appends to it query 
-parameters in a syntax supported by the service.</li>
-<li>resourceShape: In some cases, to create resources and to query those that already exist within an OSLC Service, OSLC clients needs 
-a way to learn which properties are commonly used in or required by the service. Resources meet this need by providing a machine‐readable
-definition of an OSLC resource type.  A Resource Shape describes the properties that are allowed or required by one type of resource.
-Resource Shapes are intended to provide simple "hints" to clients at resource creation, update or query time.</li>
-<li>creationFactory: Enables clients to create new resources via HTTP POST.</li>
-</ul><p><code>get_changeRequests</code>
- Wrapping function to get every changeRequest from every Service Provider enlisted and its attributes.</p>
+          <h3>Net-OSLC-CM</h3>
 
-<p><code>_get_changeRequest ( $model )</code>
- Populates an array of Net::OSLC::CM::ChangeRequest objects. Takes in argument a RDF::Trine::Model object with the RDF model that was
- parsed from the RDF data.</p>
+          <p>The module is available on github:</p>
+          <div class="highlight">
+          <pre><span class="nv">$ </span>git clone git://github.com/arroway/Net-OSLC-CM.git</pre>
+          </div>
 
-<p><code>load_changeRequests</code>
- Loads the attributes (id, title, creator, description...) of the changeRequests by calling the <code>load</code> method of the
- Net:OSLC::CM::ChangeRequest class. See Net::OSLC::CM::ChangeRequest documentation for more information.</p>
+          Or you can <a href="https://github.com/arroway/Net-OSLC-CM/downloads">download</a> it.
+          <p>To install this module type the following:</p>
+        <div class="highlight">
+<pre><span class="nv">$ </span>perl Makefile.PL
+<span class="nv">$ </span>make
+<span class="nv">$ </span>make <span class="nb">test</span>
+<span class="nb">$ </span>make install
+</pre>
 
-<h2>Bugs</h2>
+          <h3>Simple Defects</h3>
 
-<p>Please report any bugs or feature requests to "stephanie.ouillon@telecom−sudparis.eu"</p>
+          <p>First you need to install Prophet. You can follow these <a href="http://syncwith.us/prophet/download/">instructions</a>.
+          </p>
+          <p>To run SD for this project, you need to download a dev version.</p>
+          <p>The module is available on github:</p>
+          <div class="highlight">
+          <pre><span class="nv">$ </span>git clone git://github.com/arroway/SD.git</pre>
+          </div>
 
-<h2>Copyright</h2>
+          Or you can <a href="https://github.com/arroway/SD/downloads">download</a> it.
+          <p>To install this module type the following:</p>
+        <div class="highlight">
+<pre><span class="nv">$ </span>perl Makefile.PL
+<span class="nv">$ </span>make
+<span class="nv">$ </span>make <span class="nb">test</span>
+<span class="nb">$ </span>make install
+</pre>
+          <h2 id="sd">Where to begin with SD ?</h2>
+          <p>The connectors are in the Replicas directory.
+          For each connector, you'll need to implement three classes: 
+          <ul>
+            <li>connector.pm</li>
+            <li>connector/PullEncoder.pm</li>
+            <li>connector/PushEncoder.pm</li>
+          </ul>
+          </p>
+          <p>The name you give to your connector.pm class is important because it will be the keyword that SD will use when you clone a repository to know what kind of replica it is
+          dealing with.</p>
+          <div class="highlight">
+          <pre><span class="nv">$ </span>sd clone --from 'rt:http://my-rt.repo.com'</pre>
+          </div>
 
-<p>Copyright (C) 2012 by Stephanie Ouillon</p>
+          <p>Those classes heritate from ForeignReplica.pm, ForeignReplica/PullEncoder.pm and ForeignReplica/PushEncoder.pm (run() methods).</p>
 
-<p>This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.12.3 or,
-at your option, any later version of Perl 5 you may have available.</p>
+          <img src="images/Diagrammedeclasses.png"/>
+          <center><p><font size="1">Partial UML class diagram - Some inheritance relations between SD and Prophet.</font></p></center>
+
+        <h2 id="bugs">Report Bugs</h2>
+
+        <p>Please report any bugs to "stephanie.ouillon@telecom−sudparis.eu"</p>
+
         </article>
       </div>
     </div>
     <footer>
-      <div class="owner">
-      <p><a href="https://github.com/arroway" class="avatar"><img src="https://secure.gravatar.com/avatar/898fc4d1766c01016631bc18d15e2235?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" width="48" height="48"/></a> <a href="https://github.com/arroway">arroway</a> maintains <a href="https://github.com/arroway/Net-OSLC-CM">Net-oslc-cm</a></p>
-      </div>
-      <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
-      </div>
+    <div class="owner">
+      <p><a href="https://github.com/arroway" class="avatar"><img src="https://secure.gravatar.com/avatar/898fc4d1766c01016631bc18d15e2235?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" width="48" height="48"/></a> <a href="https://github.com/arroway">arroway</a> maintains <a href="https://github.com/arroway/Net-OSLC-CM">Net-OSLC-CM</a></p>
+    </div>
+    <div class="creds">
+      <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+    </div>
     </footer>
   </div>
   <div class="current-section">
@@ -210,6 +273,6 @@ at your option, any later version of Perl 5 you may have available.</p>
     <p class="name"></p>
   </div>
 
-  
+
 </body>
 </html>
