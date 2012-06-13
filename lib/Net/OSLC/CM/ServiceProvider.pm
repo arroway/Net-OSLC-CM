@@ -64,7 +64,7 @@ It takes a Net::OSLC::CM::Connection object $connection and the URL of the targe
 
 =cut
 
-sub get_data {
+sub get_service_provider {
   my $self = shift;
   my $connection = shift;
   my $url = shift;

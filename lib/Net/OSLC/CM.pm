@@ -278,7 +278,7 @@ sub _get_service_provider {
   my $self = shift;
   my $provider = shift;
   
-  my $body_provider = $provider->get_data($self->connection, $provider->url);
+  my $body_provider = $provider->get_service_provider($self->connection, $provider->url);
   if (defined($body_provider)){
       my $model =  $provider->parse_service_provider($self->parser, $body_provider);
 
@@ -314,7 +314,7 @@ sub get_changeRequests {
   for ( $i=1 ; $i < @{$self->providers} ; $i++) {
     my $provider = ${$self->providers}[$i];
     my $url = ${$provider->queryBase}[0];
-    my $body = $provider->get_data($self->connection, $url);
+    my $body = $provider->get_service_provider($self->connection, $url);
 
     if (defined($body)){
       my $model = $provider->parse_service_provider($self->parser, $body);
