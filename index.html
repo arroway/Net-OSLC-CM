@@ -47,6 +47,7 @@
             </ul>  
           <h4><a href="#installation">Installation guidelines</a></h4>
           <h4><a href="#sd">Where to begin with SD ?</a></h4>
+          <h4><a href="#talk">Talk</a><h4>
           <h4><a href="#bugs">Report Bugs</a></h4>
 
           <h2 id="about">About this project</h2>
@@ -54,7 +55,8 @@
           according to <a href="http://open-services.net/bin/view/Main/CmHome">OSLC-CM specifications v2</a> .</p>
           
           <p>This module was built and tested using <a href="http://syncwith.us">Simple Defects</a> and the <a href="http://wiki.eclipse.org/Lyo/BuildBugzilla">OSLC-CM adaptator for Bugzilla</a>. 
-          I was working on a local network database and using HTTP basic auth. </p>
+          I was working on a local network database and using HTTP basic auth. Simple Defects is a comand-line bugtracker which needs connectors to synchronize with other bugtrackers. Net-OSLC-CM was used in SD
+          to write such a connector.</p>
 
           <h2 id="beginOslc">Where to begin with OSLC-CM?</h2>
 
@@ -231,8 +233,16 @@ my @results = $oslccm−&gt;changeRequests;
 <span class="nv">$ </span>make <span class="nb">test</span>
 <span class="nb">$ </span>make install
 </pre>
-          <h2 id="sd">Where to begin with SD ?</h2>
-          <p>The connectors are in the Replicas directory.
+        <h2 id="sd">Where to begin with SD ?</h2>
+
+         <p>SD (Simple Defects) is a command-line bugtracker using a Prophet database. It's versionned, distributed, peer to peer replicated database.
+         It can also deal with conflict resolutions on its own becauseit remembers the previous resolutions performed by the users and its peers.</p>
+
+         <p>You can learn a lot more about Prophet by looking at the slides and the videos of these <a href="http://syncwith.us/talks/">talks</a>.
+          To get started with using SD, check this page: <a href="http://syncwith.us/sd/using/">Using SD (on syncwith.us)</a>.</p>
+         
+         <p>SD can connect and synchronise with other bugtrackers thanks to connectors.
+         The connectors are in the Replica/ directory.
           For each connector, you'll need to implement three classes: 
           <ul>
             <li>connector.pm</li>
@@ -250,6 +260,10 @@ my @results = $oslccm−&gt;changeRequests;
 
           <img src="images/Diagrammedeclasses.png"/>
           <center><p><font size="1">Partial UML class diagram - Some inheritance relations between SD and Prophet.</font></p></center>
+
+        <h2 id="talk">Talk</h2>
+    
+        <p>Slides of my oral defense of the project will very soon be available on slideshare.</p>
 
         <h2 id="bugs">Report Bugs</h2>
 
