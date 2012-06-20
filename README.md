@@ -3,6 +3,7 @@
 Net-OSLC-CM is a module to help implement a [OSLC][open-services] client for Change Management,
 according to [OSLC-CM specifications v2][oslcc-cm] .
 
+Web page about the project: [http://arroway.github.com/Net-OSLC-CM][webpage].
 
 ## Installation
 
@@ -158,7 +159,7 @@ it under the same terms as Perl itself, either Perl version 5.12.3 or,
 at your option, any later version of Perl 5 you may have available.
 
 
-
+[webpage]: http://arroway.github.com/Net-OSLC-CM
 [sd]: http://syncwith.us
 [open-services]: http://open-services.net
 [oslccm-connector]: http://wiki.eclipse.org/Lyo/BuildBugzilla
