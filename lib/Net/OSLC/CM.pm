@@ -21,6 +21,7 @@ use Net::OSLC::CM::Catalog;
 use Net::OSLC::CM::Connection;
 use Net::OSLC::CM::Parser;
 use Net::OSLC::CM::ServiceProvider;
+use Net::OSLC::CM::Service;
 use Net::OSLC::CM::ChangeRequest;
 use RDF::Trine;
 use RDF::Query;
@@ -50,7 +51,7 @@ An example of use:
                   url      => $self->remote_url,
                   username => $username,
                   password => $password 
-  ));
+  );
 
   # Getting an array of changeRequests from the changeRequest database (array of Net::OSLC::CM::ChangeRequest objects)
   my @results = $oslccm->get_oslc_resources;
@@ -199,7 +200,10 @@ sub get_provider_catalog_resource {
   if (defined($body_catalog)){
     print "Found.\n";
     my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
+
+    # constructs the ServiceProviders links
     $self->catalog->query_providers($self->parser, $model);
+
   } else {
     print "No catalog available.\n";
   }
@@ -211,6 +215,7 @@ Creates an instance of the Net::OSLC::CM:Catalog class.
 
 =cut
 
+# TODO : implement optional catalog_url passing, which by default points to /catalog
 sub create_catalog {
   my $self = shift;
   my $catalog_url = "";
@@ -254,6 +259,28 @@ sub get_service_providers {
     }
   }
   print "Done.\n";
+}
+
+sub get_services {
+  my $self =shift;
+  my $provider = shift;
+
+  my $i = 0;
+  for( $i=0; $i < @{$provider->services_url}; $i++){
+
+	  my $url = ${$provider->services_url}[$i];
+	  if (defined($url)){
+
+	      my $service = Net::OSLC::CM::Service->new(
+                      cm => $self,
+                      url => $url);
+      
+	      $self->_get_service($service);
+	      
+	      push(@{$provider->services}, $service);                         
+	      
+	  }
+  }
 }
 
 =item C<< _get_service_providers ( $provider ) >>
@@ -301,22 +328,38 @@ sub _get_service_provider {
   my $body_provider = $provider->get_service_provider($self->connection, $provider->url);
   if (defined($body_provider)){
       my $model =  $provider->parse_service_provider($self->parser, $body_provider);
+      
+      $provider->query_services($self->parser, $model);
 
-      $provider->query_resource($self->parser, $model, 
-                                  "queryCapability", 
-                                  "queryBase", 
-                                  $provider->queryBase);
+      $self->get_services($provider);
+  }
+}
+
+sub _get_service {
   
-     $provider->query_resource($self->parser, $model, 
-                                  "queryCapability", 
-                                  "resourceShape", 
-                                  $provider->resourceShape);
- 
-     $provider->query_resource($self->parser, $model, 
-                                  "creationFactory", 
-                                   "resourceShape", 
-                                   $provider->creationFactory);
- }
+  my $self = shift;
+  my $service = shift;
+  
+  my $body_service = $service->get_service($self->connection, $service->url);
+  if (defined($body_service)){
+      my $model =  $service->parse_service($self->parser, $body_service);
+      
+      $service->query_resource($self->parser, $model, 
+			       "queryCapability", 
+			       "queryBase", 
+			       $service->queryBase);
+	      
+      $service->query_resource($self->parser, $model, 
+			       "queryCapability", 
+			       "resourceShape", 
+			       $service->resourceShape);
+	      
+      $service->query_resource($self->parser, $model, 
+				"creationFactory", 
+				"resourceShape", 
+				$service->creationFactory);
+
+  }
 }
 
 =over
@@ -333,14 +376,23 @@ sub get_changeRequests {
   print "Get Change Requests... ";
 
   my $i; 
-  for ( $i=1 ; $i < @{$self->providers} ; $i++) {
+  for ( $i=0 ; $i < @{$self->providers} ; $i++) {
     my $provider = ${$self->providers}[$i];
-    my $url = ${$provider->queryBase}[0];
-    my $body = $provider->get_service_provider($self->connection, $url);
 
-    if (defined($body)){
-      my $model = $provider->parse_service_provider($self->parser, $body);
-      $self->_get_changeRequest($model);
+
+    my $j;
+    for ( $j=0 ; $j < @{$provider->services} ; $j++) {
+	my $service = ${$provider->services}[$j];
+
+	my $url = ${$service->queryBase}[0];
+
+
+	my $body = $service->get_service($self->connection, $url);
+
+	if (defined($body)){
+	    my $model = $service->parse_service($self->parser, $body);
+	    $self->_get_changeRequest($model);
+	}
     }
   }
   print "Done.\n\n"
