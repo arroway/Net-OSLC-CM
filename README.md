@@ -147,7 +147,7 @@ get_oslc_resources is a wrapping function that calls successively the following:
 
 ## Bugs
 
-Please report any bugs or feature requests to "stephanie[dot]ouillon[at]gmail[dot]com"
+Please report any bugs or feature requests to "steph[dot]ouillon[at]gmail[dot]com"
 
 
 ## Copyright
