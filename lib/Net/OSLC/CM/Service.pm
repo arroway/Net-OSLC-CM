@@ -1,7 +1,10 @@
-package Net::OSLC::CM::ServiceProvider;
+package Net::OSLC::CM::Service;
 
 use Any::Moose;
 use LWP::UserAgent 6;
+
+#use LWP::Debug qw(+);
+use Data::Dumper qw(Dumper);
 
 =head1 NAME
 
@@ -28,18 +31,23 @@ has url => (
   is => 'rw',
 );  
 
-has services => (
+has queryBase => (
   isa => 'ArrayRef',
   is => 'rw',
   default => sub { [] },
 );
 
-has services_url => (
+has resourceShape => (
   isa => 'ArrayRef',
   is => 'rw',
   default => sub { [] },
 );
 
+has creationFactory => (
+  isa => 'ArrayRef',
+  is => 'rw',
+  default => sub { [] },
+);
 
 =head1 METHODS
 
@@ -54,7 +62,7 @@ It takes a Net::OSLC::CM::Connection object $connection and the URL of the targe
 
 =cut
 
-sub get_service_provider {
+sub get_service {
   my $self = shift;
   my $connection = shift;
   my $url = shift;
@@ -62,15 +70,20 @@ sub get_service_provider {
   my $ua = LWP::UserAgent->new();
   # Uncomment the following line if you have SSL cert verification issues (like "500 Can't connect to example.com:443 (certificate verify failed)")
   #$ua->ssl_opts( verify_hostname => 0 );
+  $ua->ssl_opts( verify_hostname => 0 );
 
   my $request = HTTP::Request->new(GET => $url);
   
   $request->header('Accept' => 'application/rdf+xml');
   $request->authorization_basic($connection->username, $connection->password);
+
+  print Dumper($request);
   
+#  my $http_response = $connection->connection->request($request);
   my $http_response = $ua->request( $request );
 
   if ($http_response->is_success) {
+#      print Dumper($http_response);
     my $body = $connection->get_http_body($http_response);
     return $body; 
    }
@@ -86,7 +99,7 @@ Parses RDF/XML data that we got from the HTTP request for a given Service Provid
 
 =cut
 
-sub parse_service_provider {
+sub parse_service {
   my $self = shift;
   my ($parser, $body) = @_;
   
@@ -94,25 +107,6 @@ sub parse_service_provider {
   return $model; 
 }
 
-sub query_services {
-  my $self = shift;
-  my $parser = shift;
-  my $model = shift;
-  my $arrayref = [];
-
-  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url rdf:type <http://open-services.net/ns/core#Service> }";
-  $parser->query_rdf($model, $rdf_query, $arrayref);
-
-  my $i = 0;
-  for ( $i=0; $i < @{$arrayref}; $i++){
-      my $service = ${$arrayref}[$i]->{ 'url' }->uri_value;
-      if ($service =~ m/https?:\/\/(.*)/ and $service !~ m/$self->url/){
-        push($self->services_url, $service);
-      }
-
-  }
-
-}
 
 =item C<< query_resource >>
 
@@ -121,29 +115,29 @@ queryCapability or resourceShape.
 
 =cut 
 
-# sub query_resource {
-#   my $self = shift;
-#   my ($parser, $model, $resource, $property, $result) = @_;
+sub query_resource {
+  my $self = shift;
+  my ($parser, $model, $resource, $property, $result) = @_;
 
-#   my $rdf_query = "SELECT ?y WHERE
-#                     {
-#                     ?z oslc:" . $resource . " ?x .
-#                     ?x oslc:" . $property . " ?y .
-#                     }";
+  my $rdf_query = "SELECT ?y WHERE
+                    {
+                    ?z oslc:" . $resource . " ?x .
+                    ?x oslc:" . $property . " ?y .
+                    }";
                   
-#   print "$rdf_query \n";
+  print "$rdf_query \n";
 
-#   $parser->query_rdf($model, $rdf_query, $result);
+  $parser->query_rdf($model, $rdf_query, $result);
 
-#   print Dumper($result);
-#   my $i = 0;
-#   for ( $i=0; $i < @{$result}; $i++){
-#     if ( ${$result}[$i] =~ m/{ y=<(.*)> }/){
-#       ${$result}[$i] = $1;
-#       print ${$result}[$i] . "\n";
-#     }
-#   }
-# }
+  print Dumper($result);
+  my $i = 0;
+  for ( $i=0; $i < @{$result}; $i++){
+    if ( ${$result}[$i] =~ m/{ y=<(.*)> }/){
+      ${$result}[$i] = $1;
+      print ${$result}[$i] . "\n";
+    }
+  }
+}
 
 1;
 

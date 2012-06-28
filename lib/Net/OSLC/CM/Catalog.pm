@@ -1,6 +1,7 @@
 package Net::OSLC::CM::Catalog;
 
 use Any::Moose;
+use LWP::UserAgent 6;
 
 =head1 NAME
 
@@ -53,13 +54,17 @@ sub get_catalog {
   # The service provider should provide a catalog in RDF or HTML.
   # We ask for the XML version. 
 
+  my $ua = LWP::UserAgent->new();
+  # Uncomment the following line if you have SSL cert verification issues (like "500 Can't connect to example.com:443 (certificate verify failed)")
+  #$ua->ssl_opts( verify_hostname => 0 );
+
   my $request = HTTP::Request->new(GET => $self->url);
 
   $request->header('Accept' => 'application/rdf+xml');
   $request->authorization_basic($connection->username, $connection->password);
 
-  my $http_response = $connection->connection->request($request);
-  
+  my $http_response = $ua->request( $request );
+
   if ($http_response->is_success) {
     my $body = $connection->get_http_body($http_response);
     return $body;
@@ -102,18 +107,15 @@ sub query_providers {
   my $model = shift;
   my $arrayref = [];
 
-  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url dcterms:title ?u }";
+  my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url rdf:type <http://open-services.net/ns/core#ServiceProvider> . ?url dcterms:title ?u }";
   $parser->query_rdf($model, $rdf_query, $arrayref);
 
   my $i = 0;
   for ( $i=0; $i < @{$arrayref}; $i++){
-    if ( ${$arrayref}[$i] =~ m/{ url=<(.*)> }/){
-      my $provider = $1;
-      if ($provider =~ m/http:\/\/(.*)/ and $provider !~ m/$self->url/){
-        push($self->providers_url,$provider);
+      my $provider = ${$arrayref}[$i]->{ 'url' }->uri_value;
+      if ($provider =~ m/https?:\/\/(.*)/ and $provider !~ m/$self->url/){
+        push($self->providers_url, $provider);
       }
-    }
-
 
   }
 
