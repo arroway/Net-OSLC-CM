@@ -147,16 +147,26 @@ get_oslc_resources is a wrapping function that calls successively the following:
 
 ## Bugs
 
-Please report any bugs or feature requests to "stephanie.ouillon@telecom−sudparis.eu"
+Please report any bugs or feature requests to "stephanie[dot]ouillon[at]gmail[dot]com"
 
 
 ## Copyright
 
-Copyright (C) 2012 by Stephanie Ouillon
+Copyright (C) 2012 Stéphanie Ouillon
+ 
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+and Eclipse Distribution License v. 1.0 which accompanies this distribution. 
+ 
+The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+and the Eclipse Distribution License is available at 
+http://www.eclipse.org/org/documents/edl-v10.php.
+ 
+Contributors:
+  Stéphanie Ouillon - initial API and implementation
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.12.3 or,
-at your option, any later version of Perl 5 you may have available.
+
+This project has been initiated as a student project with the support of Télécom SudParis. 
 
 
 [webpage]: http://arroway.github.com/Net-OSLC-CM

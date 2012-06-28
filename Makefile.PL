@@ -1,7 +1,7 @@
 use inc::Module::Install;
 name('Net-OSLC-CM');
 author('Stephanie Ouillon');
-license('?');
+license('Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0');
 version_from('lib/Net/OSLC/CM.pm');
 
 requires('Any::Moose');

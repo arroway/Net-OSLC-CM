@@ -1,3 +1,19 @@
+#######################################################################################
+# Copyright (c) 2012 Stéphanie Ouillon
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# and Eclipse Distribution License v. 1.0 which accompanies this distribution. 
+#
+# The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+# and the Eclipse Distribution License is available at 
+# http://www.eclipse.org/org/documents/edl-v10.php.
+#
+# Contributors:
+#
+#   Stéphanie Ouillon - initial API and implementation
+#######################################################################################
+
 package Net::OSLC::CM;
 use Any::Moose;
 
@@ -389,18 +405,26 @@ __END__
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<< stephanie.ouillon@telecom-sudparis.eu >>
+Please report any bugs or feature requests to C<< steph[dot]ouillon[at]gmail[dot]com >>
 
 =head1 AUTHOR
 
-Stephanie Ouillon
+Stéphanie Ouillon
 
-=head1 copyright
+=head1 copyright & license
 
 Copyright (C) 2012 by Stephanie Ouillon
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.12.3 or,
-at your option, any later version of Perl 5 you may have available.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+and Eclipse Distribution License v. 1.0 which accompanies this distribution. 
+
+The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+and the Eclipse Distribution License is available at 
+http://www.eclipse.org/org/documents/edl-v10.php.
+
+Contributors:
+
+    Stéphanie Ouillon - initial API and implementation
 
 =cut
