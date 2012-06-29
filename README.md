@@ -1,19 +1,20 @@
 # Net-OSLC-CM version 0.01
 
-Net-OSLC-CM is a module to help implement a [OSLC][open-services] client for Change Management,
-according to [OSLC-CM specifications v2][oslcc-cm] .
+Net-OSLC-CM is a module to help implement an [OSLC][open-services] client/consumer for Change Management,
+according to the [OSLC-CM specifications v2][oslcc-cm] .
 
-Web page about the project: [http://arroway.github.com/Net-OSLC-CM][webpage].
+Refer to the project's webpage for general details about the project: [http://arroway.github.com/Net-OSLC-CM][webpage].
 
 ## Installation
 
-Dependencies:
+CPAN dependencies:
 
 * HTTP::MessageParser
 * RDF::Trine
 * RDF::Query
+* RDF::Helper (needed by the tests)
 
-To install this module type the following:
+To install this module type the following commands:
 
 ~~~ sh
    perl Makefile.PL
