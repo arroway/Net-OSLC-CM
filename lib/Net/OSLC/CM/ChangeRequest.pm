@@ -182,7 +182,7 @@ sub get_changeRequest {
 
   my $ua = LWP::UserAgent->new();
   # Uncomment the following line if you have SSL cert verification issues (like "500 Can't connect to example.com:443 (certificate verify failed)")
-  $ua->ssl_opts( verify_hostname => 0 );
+  #$ua->ssl_opts( verify_hostname => 0 );
 
   my $request = HTTP::Request->new(GET => $self->url);
 
