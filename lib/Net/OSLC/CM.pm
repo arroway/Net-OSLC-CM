@@ -413,24 +413,18 @@ sub _get_changeRequest {
   my $property = "ChangeRequest";
   #XXX: improve the query
   my $rdf_query = "SELECT DISTINCT ?url WHERE
-                     {
-                     ?url rdf:type ?u
-                     }";
-                     #?z rdfs:" . $resource . " ?x .
-                     #?x oslc_cm:" . $property . " ?y .  
-                     #}";
+                   {
+                       ?d rdfs:member ?url .
+                   }";
+
   my $result = [];
   $self->parser->query_rdf($model, $rdf_query, $result);
   
   my $i = 0;
   for ( $i=0; $i < @{$result}; $i++){
-    if ( ${$result}[$i] =~ m/{ url=<(.*)> }/){
-      my $res = $1;
-      if ($res =~ m/http:\/\/(.*)\/changerequest\?id\=(.*)/){
+      my $res = ${$result}[$i]->{ 'url' }->uri_value;
         my $changeRequest = Net::OSLC::CM::ChangeRequest->new(url => $res);
         push(@{$self->changeRequests}, $changeRequest);
-      }
-    }
   }
 }
 
