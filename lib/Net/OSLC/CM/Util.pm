@@ -28,11 +28,17 @@ sub XSDToDateTime {
   my $self = shift;
   my $XSDTime = shift;
   my $dt = undef;
+  my $y, $m, $d, $h, $mi, $s, $z, $zh, $zm;
 
-  my ($y, $m, $d, $h, $mi, $s) = ($XSDTime =~ 
-    m/^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})Z/) ;
+  ($y, $m, $d, $h, $mi, $s) = ($XSDTime =~ 
+    m/^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(zzzzzz)?Z/) ;
 
-  my ($other, $z, $zh, $zm) = ($XSDTime =~ m/(.*)Z([+|-]{1})([0-9]{2}):([0-9]{2})/);
+  #print "test: " . $y . " " . $m  . " " . $d . " " . $h . " " . $mi . " " . $s . " " . $z . " " . $zh . " " . $zm . "\n";  
+
+  if (!defined($y)) {
+      ($y, $m, $d, $h, $mi, $s, $z, $zh, $zm) = ($XSDTime =~ 
+				      m/^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})([+|-]{1})([0-9]{2}):([0-9]{2})/) ;
+  }
 
   if(!defined($z) and !defined($zh) and !defined($zm)){
     $z = "+";
