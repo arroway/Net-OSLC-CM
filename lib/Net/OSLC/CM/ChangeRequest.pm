@@ -96,73 +96,73 @@ sub load {
       my $person = $obj->dcterms_contributor;
       #if (defined($person->foaf_mail)){
         $self->contributor($person->foaf_email);
-        print "contributor: " . $self->contributor . "\n";
+        #print "contributor: " . $self->contributor . "\n";
       #}
   }
     
   if (defined($obj->dcterms_creator)){
      $self->creator($obj->dcterms_creator);
-     print "creator: " . $self->creator . "\n";
+     #print "creator: " . $self->creator . "\n";
   }
 
   if (defined($obj->dcterms_created)){
      my $xsd = $obj->dcterms_created;
      my $datetime = Net::OSLC::CM::Util->XSDToDateTime($xsd);
      $self->created($datetime);
-     print "created: " . $self->created . "\n";
+     #print "created: " . $self->created . "\n";
   }
   
   if (defined($obj->dcterms_description)){
     $self->description($obj->dcterms_description);
-    print "description: " . $self->description . "\n";
+    #print "description: " . $self->description . "\n";
   }
 
   if (defined($obj->dcterms_identifier)){
     $self->identifier($obj->dcterms_identifier);
-    print "identifier: " . $self->identifier . "\n";
+    print "Get Change Request - Identifier: " . $self->identifier . "\n";
   }
   
   if (defined($obj->dcterms_modified)){
     my $xsd = $obj->dcterms_modified;
     my $datetime = Net::OSLC::CM::Util->XSDToDateTime($xsd);
     $self->modified($datetime);
-    print "modified: " . $self->modified . "\n";
+    #print "modified: " . $self->modified . "\n";
   }
   
   if (defined($obj->oslccm_status)){
     $self->status($obj->oslccm_status);
-    print "status: " . $self->status . "\n";
+    #print "status: " . $self->status . "\n";
   }
   
   if (defined($obj->dcterms_subject)){
     $self->subject($obj->dcterms_subject);
-    print "subject: " . $self->subject . "\n";
+    #print "subject: " . $self->subject . "\n";
   }
   
   if (defined($obj->dcterms_title)){
     $self->title($obj->dcterms_title);
-    print "title: " . $self->title . "\n";
+    #print "title: " . $self->title . "\n";
   }
   
   #Specific to Bugzilla
   if (defined($obj->bugz_component)){
     $self->bugz_component($obj->bugz_component);
-    print "component: " . $self->bugz_component . "\n";
+    #print "component: " . $self->bugz_component . "\n";
   }
 
   if (defined($obj->bugz_opsys)){
     $self->bugz_opsys($obj->bugz_opsys);
-    print "opsys: " . $self->bugz_opsys . "\n";
+    #print "opsys: " . $self->bugz_opsys . "\n";
   }
   
   if (defined($obj->bugz_product)){
     $self->bugz_product($obj->bugz_product);
-    print "product: " . $self->bugz_product . "\n";
+    #print "product: " . $self->bugz_product . "\n";
   }
   
   if (defined($obj->bugz_version)){
     $self->bugz_version($obj->bugz_version);
-    print "version: " . $self->bugz_version . "\n";
+    #print "version: " . $self->bugz_version . "\n";
   }
 
 }
@@ -178,7 +178,7 @@ sub get_changeRequest {
   my $self = shift;
   my $connection = shift;
 
-  print $self->url . "\n";
+  #print $self->url . "\n";
 
   my $request = HTTP::Request->new(GET => $self->url);
 

@@ -139,7 +139,7 @@ sub query_resource {
   for ( $i=0; $i < @{$result}; $i++){
     if ( ${$result}[$i] =~ m/{ y=<(.*)> }/){
       ${$result}[$i] = $1;
-      print ${$result}[$i] . "\n";
+      #print ${$result}[$i] . "\n";
     }
   }
 }

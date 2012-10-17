@@ -194,12 +194,14 @@ OSLC CM service providers must provide a Service Provider Resource and *MAY* pro
 sub get_provider_catalog_resource {
   my $self =shift;
 
+  print "Fetch Catalog if available... ";
   my $body_catalog = $self->catalog->get_catalog($self->connection);
   if (defined($body_catalog)){
+    print "Found.\n";
     my $model =  $self->catalog->parse_catalog($self->parser, $body_catalog);
     $self->catalog->query_providers($self->parser, $model);
   } else {
-    print "No catalog available.\n"
+    print "No catalog available.\n";
   }
 }
 
@@ -236,6 +238,7 @@ Populates an array of Service Providers objects.
 sub get_service_providers {
   my $self =shift;
 
+  print "Get Service Providers URLs... ";
   my $i = 0;
   for( $i=0; $i < @{$self->catalog->providers_url}; $i++){
 
@@ -250,6 +253,7 @@ sub get_service_providers {
       push(@{$self->providers}, $provider);                         
     }
   }
+  print "Done.\n";
 }
 
 =item C<< _get_service_providers ( $provider ) >>
@@ -325,7 +329,9 @@ sub _get_service_provider {
 
 sub get_changeRequests {
   my $self = shift;
-  
+
+  print "Get Change Requests... ";
+
   my $i; 
   for ( $i=1 ; $i < @{$self->providers} ; $i++) {
     my $provider = ${$self->providers}[$i];
@@ -337,6 +343,7 @@ sub get_changeRequests {
       $self->_get_changeRequest($model);
     }
   }
+  print "Done.\n\n"
 }
 
 =item C<< _get_changeRequest ( $model ) >>
