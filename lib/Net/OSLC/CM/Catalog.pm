@@ -70,16 +70,15 @@ sub get_catalog {
   # The service provider should provide a catalog in RDF or HTML.
   # We ask for the XML version. 
 
-  my $ua = LWP::UserAgent->new();
   # Uncomment the following line if you have SSL cert verification issues (like "500 Can't connect to example.com:443 (certificate verify failed)")
-  #$ua->ssl_opts( verify_hostname => 0 );
+  #$connection->connection->ssl_opts( verify_hostname => 0 );
 
   my $request = HTTP::Request->new(GET => $self->url);
 
   $request->header('Accept' => 'application/rdf+xml');
   $request->authorization_basic($connection->username, $connection->password);
 
-  my $http_response = $ua->request( $request );
+  my $http_response = $conneciton->conneciton->request( $request );
 
   if ($http_response->is_success) {
     my $body = $connection->get_http_body($http_response);
