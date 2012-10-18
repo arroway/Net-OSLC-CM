@@ -13,6 +13,7 @@ CPAN dependencies:
 * RDF::Trine
 * RDF::Query
 * RDF::Helper (needed by the tests)
+* Data::Dumper
 
 To install this module type the following commands:
 
