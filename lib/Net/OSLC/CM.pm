@@ -261,27 +261,6 @@ sub get_service_providers {
   print "Done.\n";
 }
 
-sub get_services {
-  my $self =shift;
-  my $provider = shift;
-
-  my $i = 0;
-  for( $i=0; $i < @{$provider->services_url}; $i++){
-
-	  my $url = ${$provider->services_url}[$i];
-	  if (defined($url)){
-
-	      my $service = Net::OSLC::CM::Service->new(
-                      cm => $self,
-                      url => $url);
-      
-	      $self->_get_service($service);
-	      
-	      push(@{$provider->services}, $service);                         
-	      
-	  }
-  }
-}
 
 =item C<< _get_service_providers ( $provider ) >>
 
@@ -331,12 +310,35 @@ sub _get_service_provider {
       
       $provider->query_services($self->parser, $model);
 
+      print "\n\tGetting services...";
       $self->get_services($provider);
+      print "Done.\n";
   }
 }
 
-sub _get_service {
-  
+sub get_services {
+  my $self =shift;
+  my $provider = shift;
+
+  my $i = 0;
+  for( $i=0; $i < @{$provider->services_url}; $i++){
+
+	  my $url = ${$provider->services_url}[$i];
+	  if (defined($url)){
+
+	      my $service = Net::OSLC::CM::Service->new(
+                      cm => $self,
+                      url => $url);
+      
+	      $self->_get_service($service);
+	      
+	      push(@{$provider->services}, $service);                         
+	      
+	  }
+  }
+}
+
+sub _get_service {  
   my $self = shift;
   my $service = shift;
   

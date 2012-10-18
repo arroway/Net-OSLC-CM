@@ -118,15 +118,21 @@ sub query_services {
   my $rdf_query = "SELECT DISTINCT ?url WHERE  { ?url rdf:type <http://open-services.net/ns/core#Service> }";
   $parser->query_rdf($model, $rdf_query, $arrayref);
 
-  my $i = 0;
-  for ( $i=0; $i < @{$arrayref}; $i++){
-      my $service = ${$arrayref}[$i]->{ 'url' }->uri_value;
-      if ($service =~ m/https?:\/\/(.*)/ and $service !~ m/$self->url/){
-        push($self->services_url, $service);
-      }
-
+  # If the Service resources exist, we collect their URI
+  if (@{$arrayref} > 1){
+    my $i = 0;
+    for ( $i=0; $i < @{$arrayref}; $i++){
+          my $service = ${$arrayref}[$i]->{ 'url' }->uri_value;
+          if ($service =~ m/https?:\/\/(.*)/ and $service !~ m/$self->url/){
+            push($self->services_url, $service);
+          }
+   }
   }
-
+  # If not, we just put the URI of the Service Provider from which we'll also be able
+  # to get the Service resources. 
+  else { 
+    push($self->services_url, $self->url);
+  }
 }
 
 =item C<< query_resource >>
