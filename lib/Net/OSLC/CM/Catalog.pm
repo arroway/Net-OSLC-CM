@@ -78,7 +78,7 @@ sub get_catalog {
   $request->header('Accept' => 'application/rdf+xml');
   $request->authorization_basic($connection->username, $connection->password);
 
-  my $http_response = $conneciton->conneciton->request( $request );
+  my $http_response = $connection->connection->request( $request );
 
   if ($http_response->is_success) {
     my $body = $connection->get_http_body($http_response);
