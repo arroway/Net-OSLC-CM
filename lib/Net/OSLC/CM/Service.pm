@@ -69,20 +69,19 @@ sub get_service {
 
   # Uncomment the following line if you have SSL cert verification issues (like "500 Can't connect to example.com:443 (certificate verify failed)")
   #$connection->connection->ssl_opts( verify_hostname => 0 );
-  $connection->connection->ssl_opts( verify_hostname => 0 );
 
   my $request = HTTP::Request->new(GET => $url);
   
   $request->header('Accept' => 'application/rdf+xml');
   $request->authorization_basic($connection->username, $connection->password);
 
-  print Dumper($request);
+  #print Dumper($request);
   
-#  my $http_response = $connection->connection->request($request);
-  my $http_response = $ua->request( $request );
+  #my $http_response = $connection->connection->request($request);
+  my $http_response = $connection->connection->request( $request );
 
   if ($http_response->is_success) {
-#      print Dumper($http_response);
+    #print Dumper($http_response);
     my $body = $connection->get_http_body($http_response);
     return $body; 
    }
@@ -124,16 +123,16 @@ sub query_resource {
                     ?x oslc:" . $property . " ?y .
                     }";
                   
-  print "$rdf_query \n";
+  #print "$rdf_query \n";
 
   $parser->query_rdf($model, $rdf_query, $result);
 
-  print Dumper($result);
+  #print Dumper($result);
   my $i = 0;
   for ( $i=0; $i < @{$result}; $i++){
     if ( ${$result}[$i] =~ m/{ y=<(.*)> }/){
       ${$result}[$i] = $1;
-      print ${$result}[$i] . "\n";
+      #print ${$result}[$i] . "\n";
     }
   }
 }
