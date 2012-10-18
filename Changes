@@ -1,6 +1,14 @@
 Revision history for Perl extension Net::OSLC.
 
+
+0.02 Thu Oct 18 
+  - Get Catalog, Service Providers and Change Requests
+  - HTTP basic auth
+  - Support for self-signed certs
+  - tested with Bugzilla and FusionForge OSLC-CM Providers
+
 0.01  Wed Mar 14 22:05:47 2012
 	- original version; created by h2xs 1.23 with options
 		-AXc Net::OSLC::CM
+
 
